@@ -109,3 +109,35 @@ class cpuInfo(object):
 def byteToGb(byteNumber):
     # b   kb     mb      gb
     return str(format(byteNumber / 1024 / 1024 / 1024, '.3'))
+
+
+
+def detect():
+    """
+    探测服务器各项资源  
+    all:所有资源
+    cpu:cpu资源
+    mem:内存资源
+    inode:inode资源
+    net:网络带宽、和端口、当前网络连接资源  
+    file_desc:文件描述符资源  
+    io:io资源  
+    
+    """
+    pass
+
+
+def detect_cpu():
+    pass
+def detect_mem():
+    pass
+def detect_inode():
+    pass
+def detect_net():
+    pass
+def detect_file_desc():
+    pass
+def detect_io():
+    pass
+
+

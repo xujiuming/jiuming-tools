@@ -224,6 +224,9 @@ def test_network(threads):
     pc_test.testNetwork(threads)
 
 
+@local.command('detect',help='侦测当前设备各项资源')
+def detect():
+    pc_info.detect()
 # ----------------------------------- tools config manager  -----------------------------------------------------------
 
 config_remark = """
