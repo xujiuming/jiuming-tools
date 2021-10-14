@@ -124,12 +124,19 @@ def detect():
     io:io资源  
     
     """
-    pass
-
+    detect_cpu()
 
 def detect_cpu():
+    click.echo(psutil.cpu_stats())
     pass
 def detect_mem():
+    v_mem =  psutil.virtual_memory()
+    s_mem= psutil.swap_memory()
+    mem_info ="""
+    物理内存:{}/{},{}
+    虚拟内存:{}/{},{}
+    """.format(byteToGb(v_mem.total()),byteToGb(v_mem.used()),)
+    click.echo(mem_info)
     pass
 def detect_inode():
     pass

@@ -89,6 +89,7 @@ def check_tools_dependency(ctx, param, value):
         click.echo(click.style("{}未安装!部分功能无法正常运行!\n".format(no_install_tools_name), fg='red'))
     ctx.exit()
 
+
 def init_tools(ctx, param, value):
     # 判断当前shell 根据不同shell 追加内容
     # bash  在~/.bashrc 追加  eval "$(_M_COMPLETE=source m)"
@@ -100,12 +101,13 @@ def init_tools(ctx, param, value):
 
     pass
 
+
 @click.group()
 @click.option('--version', '-v', help='工具版本', is_flag=True, callback=print_version, expose_value=False, is_eager=True)
 @click.option('--check', '-c', help='检测当前环境下工具依赖是否完整', is_flag=True, callback=check_tools_dependency,
               expose_value=False,
               is_eager=True)
-@click.option('--init','-i', help='初始化项目(命令提示、添加shell脚本目录到PATH中)',is_flag=True, callback=init_tools,
+@click.option('--init', '-i', help='初始化项目(命令提示、添加shell脚本目录到PATH中)', is_flag=True, callback=init_tools,
               expose_value=False,
               is_eager=True)
 def cli():
@@ -128,11 +130,18 @@ def server_list():
 @click.option('--host', '-h', prompt='请输入服务器地址', callback=validate_ip_or_host_name_type)
 @click.option('--port', '-p', prompt='请输入服务器ssh端口,默认为22', default=22)
 @click.option('--username', '-u', prompt='请输入服务器用户名')
-@click.option('--password', '-pwd', prompt='请输入密码')
-@click.option('--path', '-path', default='', prompt='密钥位置(默认不填写)')
-def server_add(name, host, port, username, password, path):
-    if path == '':
-        path = None
+@click.option('--mode', '-m', prompt='指定模式', type=click.Choice(['PASSWORD', 'SECRET'], case_sensitive=False))
+def server_add(name, host, port, username, mode):
+    password = None
+    path = None
+
+    if str(mode).upper() == 'PASSWORD':
+        password = click.prompt('请输入密码', type=str)
+    elif str(mode).upper() == 'SECRET':
+        path = click.prompt('密钥位置', type=click.Path(exists=True))
+    else:
+        click.echo('无法识别此模式!' + mode)
+        return
     server_config.server_add(str(name).strip(), host, port, username, password, path)
 
 
@@ -224,9 +233,11 @@ def test_network(threads):
     pc_test.testNetwork(threads)
 
 
-@local.command('detect',help='侦测当前设备各项资源')
+@local.command('detect', help='侦测当前设备各项资源')
 def detect():
     pc_info.detect()
+
+
 # ----------------------------------- tools config manager  -----------------------------------------------------------
 
 config_remark = """

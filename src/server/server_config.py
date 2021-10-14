@@ -79,6 +79,7 @@ def server_add(name, host, port, username, password, path):
             click.echo(abs_path + '00' + secretKeyPath)
             # 复制密钥到配置目录命名规则 服务器名_用户名_host地址
             shutil.copyfile(abs_path, secretKeyPath)
+            os.chmod(secretKeyPath, 600)
         else:
             raise click.FileError('保存密钥异常！未找到密钥或者无权限')
     # 追加模式
@@ -338,7 +339,7 @@ def auto_open_tun(cmd_str, password):
     except pexpect.exceptions.TIMEOUT:
         click.echo(click.style("等待输入密码消息超时!", fg='yellow'))
     pid = p_tun.pid
-    click.echo( pid)
+    click.echo(pid)
     while True:
         if not psutil.pid_exists(pid):
             p_tun = pexpect.spawn(command=cmd_str, cwd=".")
@@ -359,6 +360,3 @@ def get_server_config_tun_info(sc: ServerConfig, tun_str):
         return tun_str
     else:
         return '{}:{}'.format(sc.host, sc.port)
-
-
-
