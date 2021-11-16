@@ -109,3 +109,42 @@ class cpuInfo(object):
 def byteToGb(byteNumber):
     # b   kb     mb      gb
     return str(format(byteNumber / 1024 / 1024 / 1024, '.3'))
+
+
+
+def detect():
+    """
+    探测服务器各项资源  
+    all:所有资源
+    cpu:cpu资源
+    mem:内存资源
+    inode:inode资源
+    net:网络带宽、和端口、当前网络连接资源  
+    file_desc:文件描述符资源  
+    io:io资源  
+    
+    """
+    detect_cpu()
+
+def detect_cpu():
+    click.echo(psutil.cpu_stats())
+    pass
+def detect_mem():
+    v_mem =  psutil.virtual_memory()
+    s_mem= psutil.swap_memory()
+    mem_info ="""
+    物理内存:{}/{},{}
+    虚拟内存:{}/{},{}
+    """.format(byteToGb(v_mem.total()),byteToGb(v_mem.used()),)
+    click.echo(mem_info)
+    pass
+def detect_inode():
+    pass
+def detect_net():
+    pass
+def detect_file_desc():
+    pass
+def detect_io():
+    pass
+
+
