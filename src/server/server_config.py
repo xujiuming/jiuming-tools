@@ -79,7 +79,6 @@ def server_add(name, host, port, username, password, path):
             click.echo(abs_path + '00' + secretKeyPath)
             # 复制密钥到配置目录命名规则 服务器名_用户名_host地址
             shutil.copyfile(abs_path, secretKeyPath)
-            os.chmod(secretKeyPath, 600)
         else:
             raise click.FileError('保存密钥异常！未找到密钥或者无权限')
     # 追加模式
