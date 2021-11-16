@@ -176,6 +176,8 @@ def server_connect(name):
 
 def open_ssh_secret_key_tty(host, port, username, secretKeyPath):
     cmd = 'ssh -o StrictHostKeyChecking=no -i {}  -p {} {}@{}'.format(secretKeyPath, port, username, host)
+    # 授权600
+    os.chmod(secretKeyPath, 0o600)
     p_ssh = pexpect.spawn(command=cmd)
     # 设置终端大小
     terminal_size = os.get_terminal_size()
@@ -338,7 +340,7 @@ def auto_open_tun(cmd_str, password):
     except pexpect.exceptions.TIMEOUT:
         click.echo(click.style("等待输入密码消息超时!", fg='yellow'))
     pid = p_tun.pid
-    click.echo( pid)
+    click.echo(pid)
     while True:
         if not psutil.pid_exists(pid):
             p_tun = pexpect.spawn(command=cmd_str, cwd=".")
@@ -359,6 +361,3 @@ def get_server_config_tun_info(sc: ServerConfig, tun_str):
         return tun_str
     else:
         return '{}:{}'.format(sc.host, sc.port)
-
-
-
