@@ -9,6 +9,7 @@ from src.config.global_config import compile_ip, compile_host_mame, tools_depend
 from src.local import http_server, pc_info, net_manager, pc_test
 from src.script import script_manager
 from src.server import server_config
+from src.todo import todo_manager
 
 
 def validate_ip_or_host_name_type(ctx, param, value):
@@ -335,8 +336,8 @@ def todo():
 @todo.command("create", help='创建任务')
 @click.option('--name', '-n', prompt='任务名称')
 @click.option('--content', '-c', prompt='任务内容')
-def todo_create():
-    pass
+def todo_create(name,content):
+    todo_manager.create(name,content)
 
 
 @todo.command("edit", help='编辑任务')
