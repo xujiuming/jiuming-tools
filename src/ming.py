@@ -170,7 +170,10 @@ def server_connect(name):
 @click.option('--name', '-n', type=str, prompt='请输入服务器名称', help='服务器名称')
 @click.option('--cwd', '-cwd', type=click.Path(exists=True), default='.', help='本地工作目录,默认为.')
 def server_sftp(name, cwd):
-    server_config.server_sftp(name, cwd)
+    if name is None or name == '':
+        server_config.server_select_sftp(cwd)
+    else:
+        server_config.server_sftp(name, cwd)
 
 
 @server.command('ping', help='检测服务器是否可链接(建立socket方式，不使用ping指令)')

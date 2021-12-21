@@ -1,6 +1,5 @@
 # 默认配置路径
 import os
-import pathlib
 import shutil
 import socket
 import time
@@ -8,7 +7,6 @@ import time
 import click
 import pexpect
 import psutil
-import yaml
 
 from src.config.global_config import private_key_default_file, compile_ip, compile_host_mame, \
     compile_tun_value
@@ -253,3 +251,20 @@ def server_select_connect():
         show_default=False,
     )
     server_connect(index_name_map[r])
+
+
+def server_select_sftp(cwd):
+    sc_list = server_store.find_all()
+    config_str = '服务器信息:\n'
+    index_name_map = {}
+    for index, sc in enumerate(sc_list):
+        index_name_map[str(index + 1)] = sc.name
+        config_str += '{})台服务器名称:{},地址:{},端口:{}\n'.format(index + 1, sc.name, sc.host, str(sc.port))
+    click.echo(config_str)
+    # 等待用户输入服务器编号
+    r = click.prompt(
+        "选择服务器编号:",
+        type=click.Choice(index_name_map.keys()),
+        show_default=False,
+    )
+    server_sftp(index_name_map[r], cwd)
