@@ -67,6 +67,8 @@ def server_remove(name):
 
 def server_list():
     sc_list = server_store.find_all()
+    if sc_list is None:
+        return
     config_str = "服务器信息列表:\n"
     for index, sc in enumerate(sc_list):
         config_str += '第{}台服务器名称:{},登录用户名:{},地址:{},端口:{}'.format(index + 1, sc.name, sc.username, sc.host, str(sc.port))
@@ -249,6 +251,8 @@ def get_server_config_tun_info(sc: ServerConfig, tun_str):
 def server_select_connect():
     # 获取服务器列表 增加编号
     sc_list = server_store.find_all()
+    if sc_list is None:
+        return
     config_str = '服务器信息:\n'
     index_name_map = {}
     for index, sc in enumerate(sc_list):
@@ -266,6 +270,8 @@ def server_select_connect():
 
 def server_select_sftp(cwd):
     sc_list = server_store.find_all()
+    if sc_list is None:
+        return
     config_str = '服务器信息:\n'
     index_name_map = {}
     for index, sc in enumerate(sc_list):

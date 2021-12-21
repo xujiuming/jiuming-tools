@@ -23,17 +23,22 @@ def edit():
 def remove_by_name(name):
     name = name.strip()
     sc_list = find_all()
+    if sc_list is None:
+        return None
     # 深拷贝 配置列表 进行操作列表
     new_sc_list = copy.deepcopy(sc_list)
-    for sc in sc_list:
+    for index, sc in enumerate(sc_list):
         if sc.name == name:
-            new_sc_list.remove(sc)
+            new_sc_list.remove(new_sc_list[index])
             if sc.secret_key_path is not None:
-                os.remove(sc.secretKeyPath)
+                os.remove(sc.secret_key_path)
             click.echo("删除{}服务器".format(sc.name))
     # 重新打开链接
     if len(new_sc_list) != 0:
-        yaml.safe_dump(new_sc_list, open(server_config_default_file, 'w+'))
+        dict_list = []
+        for sc in new_sc_list:
+            dict_list.append(sc.__dict__)
+        yaml.safe_dump(dict_list, open(server_config_default_file, 'w+'))
     else:
         # 清空配置
         open(server_config_default_file, 'w+').truncate()
@@ -43,6 +48,8 @@ def remove_by_name(name):
 def find_by_name(name):
     name = name.strip()
     sc_list = find_all()
+    if sc_list is None:
+        return None
     for sc in sc_list:
         if name == sc.name:
             return sc
@@ -53,14 +60,14 @@ def find_all():
     config_file = pathlib.Path(server_config_default_file)
     if not config_file.exists():
         click.echo("暂无服务器配置信息！")
-        return
+        return None
     if not config_file.is_file():
         click.echo("{}不是配置文件".format(server_config_default_file))
-        return
+        return None
     config_list = yaml.safe_load(open(server_config_default_file, 'r'))
     if config_list is None:
         click.echo("暂无服务器配置信息!")
-        return
+        return None
     result = []
     for c in config_list:
         result.append(ServerConfig.to_obj(c))
