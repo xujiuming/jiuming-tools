@@ -1,5 +1,4 @@
 # 默认配置路径
-import copy
 import os
 import pathlib
 import shutil
@@ -11,47 +10,10 @@ import pexpect
 import psutil
 import yaml
 
-from src.config.global_config import config_default_file, private_key_default_file, compile_ip, compile_host_mame, \
+from src.config.global_config import private_key_default_file, compile_ip, compile_host_mame, \
     compile_tun_value
-
-# 默认配置file
-server_config_default_file = config_default_file + '/server_config.yaml'
-
-
-class ServerConfig(object):
-    """
-    服务器配置模板class
-    """
-    # 名字
-    name: str
-    # 地址
-    host: str
-    # ssh端口
-    port: int
-    # 服务器用户名
-    username: str
-    # 密码
-    password: str
-    # 密钥位置
-    secretKeyPath: str
-
-    def __init__(self, name, host, port, username, password, secretKeyPath):
-        self.name = name
-        self.host = host
-        self.port = port
-        self.username = username
-        self.password = password
-        self.secretKeyPath = secretKeyPath
-
-    @staticmethod
-    def to_obj(d: dict):
-        """
-        将读取的dict 转换为 serverConfig
-        :param d:  dict
-        :return: ServerConfig
-        """
-        return ServerConfig(name=d['name'], host=d['host'], port=d['port'], username=d['username'],
-                            password=d['password'], secretKeyPath=d.get('secretKeyPath', None))
+from src.server import server_store
+from src.server.server_store import ServerConfig
 
 
 def server_add(name, host, port, username, password, path):
@@ -66,7 +28,7 @@ def server_add(name, host, port, username, password, path):
     :return:
     """
     name = name.strip()
-    secretKeyPath = None
+    secret_key_path = None
     if path is not None:
         abs_path = path
         # 处理用户目录
@@ -75,25 +37,24 @@ def server_add(name, host, port, username, password, path):
         click.echo(abs_path)
         if os.path.exists(abs_path) and os.path.isfile(abs_path):
             # 计算密钥地址
-            secretKeyPath = private_key_default_file + '/{}_{}.id_rsa'.format(name, username)
-            click.echo(abs_path + '00' + secretKeyPath)
+            secret_key_path = private_key_default_file + '/{}_{}.id_rsa'.format(name, username)
+            click.echo(abs_path + '00' + secret_key_path)
             # 复制密钥到配置目录命名规则 服务器名_用户名_host地址
-            shutil.copyfile(abs_path, secretKeyPath)
+            shutil.copyfile(abs_path, secret_key_path)
         else:
             raise click.FileError('保存密钥异常！未找到密钥或者无权限')
-    # 追加模式
-    y_file = open(server_config_default_file, 'a+')
+
     sc = ServerConfig(name=name, host=host, port=port, username=username, password=password,
-                      secretKeyPath=secretKeyPath)
-    yaml.safe_dump([sc.__dict__], y_file)
+                      secret_key_path=secret_key_path)
+    server_store.create(sc)
     echo_str = '\n录入的服务器信息:\n名称:{}\n地址:{}\nssh端口:{}'.format(name, host, port)
-    if secretKeyPath is not None:
-        echo_str += '\n密钥地址:{}'.format(secretKeyPath)
+    if secret_key_path is not None:
+        echo_str += '\n密钥地址:{}'.format(secret_key_path)
     click.echo(echo_str)
 
 
 def server_edit():
-    os.system('vi {}'.format(server_config_default_file))
+    server_store.edit()
 
 
 def server_remove(name):
@@ -103,75 +64,29 @@ def server_remove(name):
     :param name: 服务器名称
     :return:
     """
-    name = name.strip()
-    y_read_file = open(server_config_default_file, 'r')
-    config_list = yaml.safe_load(y_read_file)
-    if config_list is None:
-        click.echo("暂无服务器配置信息!")
-        return
-    # 深拷贝 配置列表 进行操作列表
-    new_config_list = copy.deepcopy(config_list)
-    for c in config_list:
-        sc = ServerConfig.to_obj(c)
-        if sc.name == name:
-            new_config_list.remove(c)
-            if sc.secretKeyPath is not None:
-                os.remove(sc.secretKeyPath)
-            click.echo("删除{}服务器".format(sc.name))
-    # 重新打开链接
-    if len(new_config_list) != 0:
-        yaml.safe_dump(new_config_list, open(server_config_default_file, 'w+'))
-    else:
-        # 清空配置
-        open(server_config_default_file, 'w+').truncate()
-        click.echo("服务器配置已清空!")
+    server_store.remove_by_name(name)
 
 
 def server_list():
-    config_file = pathlib.Path(server_config_default_file)
-    if not config_file.exists():
-        click.echo("暂无服务器配置信息！")
-        return
-    if not config_file.is_file():
-        click.echo("{}不是配置文件".format(server_config_default_file))
-        return
-    y_read_file = open(server_config_default_file, 'r')
-    config_list = yaml.safe_load(y_read_file)
-    if config_list is None:
-        click.echo("暂无服务器配置信息!")
-        return
-    config_str = '服务器配置信息:\n'
-    for index, c in enumerate(config_list):
-        sc = ServerConfig.to_obj(c)
+    sc_list = server_store.find_all()
+    config_str = "服务器信息列表:"
+    for index, sc in enumerate(sc_list):
         config_str += '第{}台服务器名称:{},地址:{},端口:{}'.format(index + 1, sc.name, sc.host, str(sc.port))
         if sc.secretKeyPath is not None:
             config_str = config_str + ',密钥地址:{}'.format(sc.secretKeyPath)
         config_str = config_str + '\n'
-    config_str += "\n共{}台服务器\n".format(len(config_list))
+    config_str += "\n共{}台服务器\n".format(len(sc_list))
     click.echo(config_str)
 
 
 def server_connect(name):
-    name = name.strip()
     click.echo("连接{}服务器...".format(name))
-    config_list = yaml.safe_load(open(server_config_default_file, 'r'))
-    if config_list is None:
-        click.echo("暂无{}服务器配置信息!".format(name))
-        return
-    connect_sc = None
-    for c in config_list:
-        sc = ServerConfig.to_obj(c)
-        if sc.name == name:
-            connect_sc = sc
-            break
-    if connect_sc is None:
-        click.echo("不存在{}服务器配置！".format(name))
-        return
+    sc = server_store.find_by_name(name)
     # 如果存在密钥 优先使用密钥登录服务器
-    if connect_sc.secretKeyPath is not None:
-        open_ssh_secret_key_tty(connect_sc.host, connect_sc.port, connect_sc.username, connect_sc.secretKeyPath)
+    if sc.secret_key_path is not None:
+        open_ssh_secret_key_tty(sc.host, sc.port, sc.username, sc.secret_key_path)
     else:
-        open_ssh_password_tty(connect_sc.host, connect_sc.port, connect_sc.username, connect_sc.password)
+        open_ssh_password_tty(sc.host, sc.port, sc.username, sc.password)
 
 
 def open_ssh_secret_key_tty(host, port, username, secretKeyPath):
@@ -203,26 +118,13 @@ def open_ssh_password_tty(host, port, username, password):
 
 
 def server_sftp(name, cwd_path):
-    name = name.strip()
     click.echo("连接{}服务器sftp服务...".format(name))
-    config_list = yaml.safe_load(open(server_config_default_file, 'r'))
-    if config_list is None:
-        click.echo("暂无{}服务器配置信息!".format(name))
-        return
-    connect_sc = None
-    for c in config_list:
-        sc = ServerConfig.to_obj(c)
-        if sc.name == name:
-            connect_sc = sc
-            break
-    if connect_sc is None:
-        click.echo("不存在{}服务器配置！".format(name))
-        return
-    if connect_sc.secretKeyPath is not None:
-        open_sftp_secret_key_tty(connect_sc.host, connect_sc.port, connect_sc.username, connect_sc.secretKeyPath,
+    sc = server_store.find_by_name(name)
+    if sc.secretKeyPath is not None:
+        open_sftp_secret_key_tty(sc.host, sc.port, sc.username, sc.secretKeyPath,
                                  cwd_path)
     else:
-        open_sftp_password_tty(connect_sc.host, connect_sc.port, connect_sc.username, connect_sc.password, cwd_path)
+        open_sftp_password_tty(sc.host, sc.port, sc.username, sc.password, cwd_path)
 
 
 def open_sftp_password_tty(host, port, username, password, cwd_path):
@@ -254,37 +156,18 @@ def open_sftp_secret_key_tty(host, port, username, secret_key_path, cwd_path):
     p_sftp.interact()
 
 
-def ping_ssh_server(name_arr):
+def ping_ssh_server(name):
     """
      检查 列表中的 server是否存活
     """
-    config_list = yaml.safe_load(open(server_config_default_file, 'r'))
-    if config_list is None:
-        click.echo("暂无服务器配置信息!")
-        return
-    for c in config_list:
-        sc = ServerConfig.to_obj(c)
-        if name_arr is None:
-            if sc is not None:
-                # 执行探测操作
-                start_time = time.perf_counter_ns()
-                r = open_socket_ssh_server(sc.host, sc.port)
-                end_time = time.perf_counter_ns()
-                result = "{},探测结果:{},耗时:{}ms".format(sc.host + ":" + str(sc.port), r,
-                                                     str(round((int(round((end_time - start_time) / 1000000))), 2)))
-                click.echo(result)
-        else:
-            sc = ServerConfig.to_obj(c)
-            if sc is not None:
-                # 如用户传入 name_arr 只测试传入的列表
-                if list(name_arr).__contains__(sc.name):
-                    # 执行探测操作
-                    start_time = time.perf_counter_ns()
-                    r = open_socket_ssh_server(sc.host, sc.port)
-                    end_time = time.perf_counter_ns()
-                    result = "{},探测结果:{},耗时:{}ms".format(sc.host + ":" + str(sc.port), r,
-                                                         str(round((int(round((end_time - start_time) / 1000000))), 2)))
-                    click.echo(result)
+    sc = server_store.find_by_name(name)
+    # 执行探测操作
+    start_time = time.perf_counter_ns()
+    r = open_socket_ssh_server(sc.host, sc.port)
+    end_time = time.perf_counter_ns()
+    result = "{},探测结果:{},耗时:{}ms".format(sc.host + ":" + str(sc.port), r,
+                                         str(round((int(round((end_time - start_time) / 1000000))), 2)))
+    click.echo(result)
 
 
 def open_socket_ssh_server(host, port):
@@ -304,16 +187,7 @@ def open_socket_ssh_server(host, port):
 
 
 def server_tun(left, right, reverse, name):
-    config_list = yaml.safe_load(open(server_config_default_file, 'r'))
-    if config_list is None:
-        click.echo("暂无服务器配置信息!")
-        return
-    sc = None
-    for c in config_list:
-        sc = ServerConfig.to_obj(c)
-        if sc.name == name:
-            break
-
+    sc = server_store.find_by_name(name)
     if reverse:
         cmd_str = 'ssh -CqTnN -R {} -p {} {}'.format('{}:{}'.format(get_server_config_tun_info(sc, right), left),
                                                      str(sc.port),
@@ -365,27 +239,13 @@ def get_server_config_tun_info(sc: ServerConfig, tun_str):
 
 def server_select_connect():
     # 获取服务器列表 增加编号
-    config_file = pathlib.Path(server_config_default_file)
-    if not config_file.exists():
-        click.echo("暂无服务器配置信息！")
-        return
-    if not config_file.is_file():
-        click.echo("{}不是配置文件".format(server_config_default_file))
-        return
-    y_read_file = open(server_config_default_file, 'r')
-    config_list = yaml.safe_load(y_read_file)
-    if config_list is None:
-        click.echo("暂无服务器配置信息!")
-        return
+    sc_list = server_store.find_all()
     config_str = '服务器信息:\n'
     index_name_map = {}
-    for index, c in enumerate(config_list):
-        sc = ServerConfig.to_obj(c)
+    for index, sc in enumerate(sc_list):
         index_name_map[str(index + 1)] = sc.name
         config_str += '{})台服务器名称:{},地址:{},端口:{}\n'.format(index + 1, sc.name, sc.host, str(sc.port))
-
     click.echo(config_str)
-
     # 等待用户输入服务器编号
     r = click.prompt(
         "选择服务器编号:",
