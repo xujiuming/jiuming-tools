@@ -80,6 +80,9 @@ def server_list():
 def server_connect(name):
     click.echo("连接{}服务器...".format(name))
     sc = server_store.find_by_name(name)
+    if sc is None:
+        click.echo("未找到{}服务器配置!".format(name))
+        return
     # 如果存在密钥 优先使用密钥登录服务器
     if sc.secret_key_path is not None:
         open_ssh_secret_key_tty(sc.host, sc.port, sc.username, sc.secret_key_path)
@@ -118,6 +121,9 @@ def open_ssh_password_tty(host, port, username, password):
 def server_sftp(name, cwd_path):
     click.echo("连接{}服务器sftp服务...".format(name))
     sc = server_store.find_by_name(name)
+    if sc is None:
+        click.echo("未找到{}服务器配置!".format(name))
+        return
     if sc.secretKeyPath is not None:
         open_sftp_secret_key_tty(sc.host, sc.port, sc.username, sc.secretKeyPath,
                                  cwd_path)
@@ -129,7 +135,6 @@ def open_sftp_password_tty(host, port, username, password, cwd_path):
     # 执行sftp命令
     cmd = 'sftp -o StrictHostKeyChecking=no -P {} {}@{}'.format(port, username, host)
     p_sftp = pexpect.spawn(command=cmd, cwd=cwd_path)
-    # 输入密码
     # 输入密码
     try:
         p_sftp.expect("password:", timeout=3)
@@ -159,6 +164,9 @@ def ping_ssh_server(name):
      检查 列表中的 server是否存活
     """
     sc = server_store.find_by_name(name)
+    if sc is None:
+        click.echo("未找到{}服务器配置!".format(name))
+        return
     # 执行探测操作
     start_time = time.perf_counter_ns()
     r = open_socket_ssh_server(sc.host, sc.port)
@@ -186,6 +194,9 @@ def open_socket_ssh_server(host, port):
 
 def server_tun(left, right, reverse, name):
     sc = server_store.find_by_name(name)
+    if sc is None:
+        click.echo("未找到{}服务器配置!".format(name))
+        return
     if reverse:
         cmd_str = 'ssh -CqTnN -R {} -p {} {}'.format('{}:{}'.format(get_server_config_tun_info(sc, right), left),
                                                      str(sc.port),
@@ -268,3 +279,4 @@ def server_select_sftp(cwd):
         show_default=False,
     )
     server_sftp(index_name_map[r], cwd)
+
