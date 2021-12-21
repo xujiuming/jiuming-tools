@@ -361,3 +361,35 @@ def get_server_config_tun_info(sc: ServerConfig, tun_str):
         return tun_str
     else:
         return '{}:{}'.format(sc.host, sc.port)
+
+
+def server_select_connect():
+    # 获取服务器列表 增加编号
+    config_file = pathlib.Path(server_config_default_file)
+    if not config_file.exists():
+        click.echo("暂无服务器配置信息！")
+        return
+    if not config_file.is_file():
+        click.echo("{}不是配置文件".format(server_config_default_file))
+        return
+    y_read_file = open(server_config_default_file, 'r')
+    config_list = yaml.safe_load(y_read_file)
+    if config_list is None:
+        click.echo("暂无服务器配置信息!")
+        return
+    config_str = '服务器信息:\n'
+    index_name_map = {}
+    for index, c in enumerate(config_list):
+        sc = ServerConfig.to_obj(c)
+        index_name_map[str(index + 1)] = sc.name
+        config_str += '{})台服务器名称:{},地址:{},端口:{}\n'.format(index + 1, sc.name, sc.host, str(sc.port))
+
+    click.echo(config_str)
+
+    # 等待用户输入服务器编号
+    r = click.prompt(
+        "选择服务器编号:",
+        type=click.Choice(index_name_map.keys()),
+        show_default=False,
+    )
+    server_connect(index_name_map[r])

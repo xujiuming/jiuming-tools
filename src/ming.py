@@ -1,5 +1,4 @@
 # -*- coding:utf-8 -*-
-import datetime
 import os
 
 import click
@@ -9,7 +8,6 @@ from src.config.global_config import compile_ip, compile_host_mame, tools_depend
 from src.local import http_server, pc_info, net_manager, pc_test
 from src.script import script_manager
 from src.server import server_config
-from src.todo import todo_manager
 
 
 def validate_ip_or_host_name_type(ctx, param, value):
@@ -159,9 +157,13 @@ def server_edit():
 
 
 @server.command('connect', help='连接服务器')
-@click.option('--name', '-n', type=str, prompt='请输入服务器名称', help='服务器名称')
+@click.option('--name', '-n', type=str, help='服务器名称')
 def server_connect(name):
-    server_config.server_connect(name)
+    if name is None or name == '':
+        # 当名称为空的时候  读取list 排序出来  增加编号选择处理
+        server_config.server_select_connect()
+    else:
+        server_config.server_connect(name)
 
 
 @server.command('sftp', help='打开sftp客户端')
@@ -328,65 +330,66 @@ def script_exec(name):
     script_manager.script_exec(name)
 
 
-@cli.group(help="管理日常任务")
-def todo():
-    pass
-
-
-@todo.command("create", help='创建任务')
-@click.option('--name', '-n', prompt='任务名称')
-@click.option('--content', '-c', prompt='任务内容')
-def todo_create(name,content):
-    todo_manager.create(name,content)
-
-
-@todo.command("edit", help='编辑任务')
-@click.option('--name', '-n', prompt='任务名称')
-@click.option('--content', '-c', prompt='任务内容')
-def todo_edit():
-    pass
-
-
-@todo.command("over", help='完成任务')
-@click.option('--name', '-n', prompt='任务名称')
-def todo_over():
-    pass
-
-
-@todo.command("delete", help='删除任务')
-@click.option('--name', '-n', prompt='任务名称')
-def todo_delete():
-    pass
-
-
-@todo.command("list", help='任务列表')
-@click.option('--date', '-d', type=click.types.DateTime, prompt='时间,默认当天', default=datetime.datetime)
-def todo_list():
-    pass
-
-
-@todo.command("daily", help='生成日报')
-@click.option('--date', '-d', type=click.types.DateTime, prompt='时间,默认当天', default=datetime.datetime)
-def todo_daily():
-    pass
-
-
-@todo.command("weekly", help='生成周报')
-@click.option('--date', '-d', type=click.types.DateTime, prompt='时间归属的周,默认当天', default=datetime.datetime)
-def todo_weekly():
-    pass
-
-
-@todo.command("monthly", help='生成月报')
-@click.option('--date', '-d', type=click.types.DateTime, prompt='时间归属的月,默认当天', default=datetime.datetime)
-def todo_monthly():
-    pass
-
-
-@todo.command("yearly", help='生成年报')
-@click.option('--date', '-d', type=click.types.DateTime, prompt='时间归属的年,默认当天', default=datetime.datetime)
-def todo_yearly():
-    pass
+#
+# @cli.group(help="管理日常任务")
+# def todo():
+#     pass
+#
+#
+# @todo.command("create", help='创建任务')
+# @click.option('--name', '-n', prompt='任务名称')
+# @click.option('--content', '-c', prompt='任务内容')
+# def todo_create(name,content):
+#     todo_manager.create(name,content)
+#
+#
+# @todo.command("edit", help='编辑任务')
+# @click.option('--name', '-n', prompt='任务名称')
+# @click.option('--content', '-c', prompt='任务内容')
+# def todo_edit():
+#     pass
+#
+#
+# @todo.command("over", help='完成任务')
+# @click.option('--name', '-n', prompt='任务名称')
+# def todo_over():
+#     pass
+#
+#
+# @todo.command("delete", help='删除任务')
+# @click.option('--name', '-n', prompt='任务名称')
+# def todo_delete():
+#     pass
+#
+#
+# @todo.command("list", help='任务列表')
+# @click.option('--date', '-d',  prompt='时间,默认当天', default=datetime.datetime)
+# def todo_list():
+#     pass
+#
+#
+# @todo.command("daily", help='生成日报')
+# @click.option('--date', '-d',  prompt='时间,默认当天', default=datetime.datetime)
+# def todo_daily():
+#     pass
+#
+#
+# @todo.command("weekly", help='生成周报')
+# @click.option('--date', '-d',  prompt='时间归属的周,默认当天', default=datetime.datetime)
+# def todo_weekly():
+#     pass
+#
+#
+# @todo.command("monthly", help='生成月报')
+# @click.option('--date', '-d',  prompt='时间归属的月,默认当天', default=datetime.datetime)
+# def todo_monthly():
+#     pass
+#
+#
+# @todo.command("yearly", help='生成年报')
+# @click.option('--date', '-d',  prompt='时间归属的年,默认当天', default=datetime.datetime)
+# def todo_yearly():
+#     pass
 
 
 # main 函数
