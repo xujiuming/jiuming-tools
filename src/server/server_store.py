@@ -17,7 +17,7 @@ def create(sc):
 
 
 def edit():
-    click.edit(server_config_default_file)
+    click.edit(filename=server_config_default_file)
 
 
 def remove_by_name(name):

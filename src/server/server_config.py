@@ -67,13 +67,13 @@ def server_remove(name):
 
 def server_list():
     sc_list = server_store.find_all()
-    config_str = "服务器信息列表:"
+    config_str = "服务器信息列表:\n"
     for index, sc in enumerate(sc_list):
-        config_str += '第{}台服务器名称:{},地址:{},端口:{}'.format(index + 1, sc.name, sc.host, str(sc.port))
-        if sc.secretKeyPath is not None:
-            config_str = config_str + ',密钥地址:{}'.format(sc.secretKeyPath)
+        config_str += '第{}台服务器名称:{},登录用户名:{},地址:{},端口:{}'.format(index + 1, sc.name, sc.username, sc.host, str(sc.port))
+        if sc.secret_key_path is not None:
+            config_str = config_str + ',密钥地址:{}'.format(sc.secret_key_path)
         config_str = config_str + '\n'
-    config_str += "\n共{}台服务器\n".format(len(sc_list))
+    config_str += "\n共{}台服务器".format(len(sc_list))
     click.echo(config_str)
 
 
@@ -90,10 +90,10 @@ def server_connect(name):
         open_ssh_password_tty(sc.host, sc.port, sc.username, sc.password)
 
 
-def open_ssh_secret_key_tty(host, port, username, secretKeyPath):
-    cmd = 'ssh -o StrictHostKeyChecking=no -i {}  -p {} {}@{}'.format(secretKeyPath, port, username, host)
+def open_ssh_secret_key_tty(host, port, username, secret_key_path):
+    cmd = 'ssh -o StrictHostKeyChecking=no -i {}  -p {} {}@{}'.format(secret_key_path, port, username, host)
     # 授权600
-    os.chmod(secretKeyPath, 0o600)
+    os.chmod(secret_key_path, 0o600)
     p_ssh = pexpect.spawn(command=cmd)
     # 设置终端大小
     terminal_size = os.get_terminal_size()
@@ -124,8 +124,8 @@ def server_sftp(name, cwd_path):
     if sc is None:
         click.echo("未找到{}服务器配置!".format(name))
         return
-    if sc.secretKeyPath is not None:
-        open_sftp_secret_key_tty(sc.host, sc.port, sc.username, sc.secretKeyPath,
+    if sc.secret_key_path is not None:
+        open_sftp_secret_key_tty(sc.host, sc.port, sc.username, sc.secret_key_path,
                                  cwd_path)
     else:
         open_sftp_password_tty(sc.host, sc.port, sc.username, sc.password, cwd_path)
@@ -279,4 +279,3 @@ def server_select_sftp(cwd):
         show_default=False,
     )
     server_sftp(index_name_map[r], cwd)
-
