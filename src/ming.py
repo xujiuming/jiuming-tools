@@ -80,7 +80,7 @@ def check_tools_dependency(ctx, param, value):
         if i.cmd in cmd_name_set:
             echo_str += "{}已经安装!\n".format(i.cmd)
         else:
-            echo_str += "{}未安装!安装示例:{}\n".format(i.cmd, i.installDemoCmd)
+            echo_str += "{}未安装!安装示例:{}\n".format(i.cmd, i.install_demo_cmd)
             no_install_tools_name.append(i.cmd)
         echo_str += "--------------------------------------\n"
     echo_str += "依赖检查完毕!\n"

@@ -15,12 +15,12 @@ class ToolsDependency:
     """
     cmd: str
     desc: str
-    installDemoCmd: str
+    install_demo_cmd: str
 
-    def __init__(self, cmd, desc=None, installDemoCmd=None):
+    def __init__(self, cmd, desc=None, install_demo_cmd=None):
         self.cmd = cmd
         self.desc = desc
-        self.installDemoCmd = installDemoCmd
+        self.install_demo_cmd = install_demo_cmd
 
 
 # 工具依赖信息数组
