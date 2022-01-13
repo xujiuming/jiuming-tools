@@ -59,6 +59,10 @@ def echo_pc_info():
         psutil.cpu_count()
     )
     click.echo(cpu_str)
+    cpu_load_str = '''cpu当前负载信息:
+{}    
+'''.format(subprocess.getoutput('mpstat -P ALL'))
+    click.echo(cpu_load_str)
 
     memory_str = '''内存信息:
 {}
