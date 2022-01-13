@@ -75,6 +75,16 @@ def echo_pc_info():
 '''.format(subprocess.getoutput('df -h'))
     click.echo(disk_str)
 
+    inode_str = '''inode使用信息:
+{}    
+'''.format(subprocess.getoutput('df -ih'))
+    click.echo(inode_str)
+
+    ss_str = '''socket使用摘要统计信息:
+{}    
+'''.format(subprocess.getoutput('ss -s '))
+    click.echo(ss_str)
+
     # 异步执行 screenfetch
     loop = asyncio.get_event_loop()
     screenfetch_future = asyncio.ensure_future(asyncGetScreenfetch(), loop=loop)
@@ -111,7 +121,6 @@ def byteToGb(byteNumber):
     return str(format(byteNumber / 1024 / 1024 / 1024, '.3'))
 
 
-
 def detect():
     """
     探测服务器各项资源  
@@ -125,26 +134,38 @@ def detect():
     
     """
     detect_cpu()
+    detect_mem()
+
 
 def detect_cpu():
-    click.echo(psutil.cpu_stats())
-    pass
+    cpu_load_arr = psutil.cpu_percent(3, True)
+    click.echo("cpu负载信息:")
+    for i, c in enumerate(cpu_load_arr):
+        click.echo("第{}个cpu负载:{}".format(i, c))
+    click.echo("总负载:{}".format(sum(cpu_load_arr)))
+
+
 def detect_mem():
-    v_mem =  psutil.virtual_memory()
-    s_mem= psutil.swap_memory()
-    mem_info ="""
+    v_mem = psutil.virtual_memory()
+    s_mem = psutil.swap_memory()
+    mem_info = """
     物理内存:{}/{},{}
     虚拟内存:{}/{},{}
-    """.format(byteToGb(v_mem.total()),byteToGb(v_mem.used()),)
+    """.format(byteToGb(v_mem.used()), byteToGb(v_mem.total()), 0, byteToGb(s_mem.used), byteToGb(s_mem.total), 0)
     click.echo(mem_info)
-    pass
+
+
 def detect_inode():
     pass
+
+
 def detect_net():
     pass
+
+
 def detect_file_desc():
     pass
+
+
 def detect_io():
     pass
-
-

@@ -240,9 +240,9 @@ def test_network(threads):
     pc_test.testNetwork(threads)
 
 
-@local.command('detect', help='侦测当前设备各项资源')
-def detect():
-    pc_info.detect()
+# @local.command('detect', help='侦测当前设备各项资源')
+# def detect():
+#     pc_info.detect()
 
 
 # ----------------------------------- tools config manager  -----------------------------------------------------------
@@ -331,69 +331,6 @@ def script_list():
 @click.option('--name', '-n', prompt='脚本名称')
 def script_exec(name):
     script_manager.script_exec(name)
-
-
-#
-# @cli.group(help="管理日常任务")
-# def todo():
-#     pass
-#
-#
-# @todo.command("create", help='创建任务')
-# @click.option('--name', '-n', prompt='任务名称')
-# @click.option('--content', '-c', prompt='任务内容')
-# def todo_create(name,content):
-#     todo_manager.create(name,content)
-#
-#
-# @todo.command("edit", help='编辑任务')
-# @click.option('--name', '-n', prompt='任务名称')
-# @click.option('--content', '-c', prompt='任务内容')
-# def todo_edit():
-#     pass
-#
-#
-# @todo.command("over", help='完成任务')
-# @click.option('--name', '-n', prompt='任务名称')
-# def todo_over():
-#     pass
-#
-#
-# @todo.command("delete", help='删除任务')
-# @click.option('--name', '-n', prompt='任务名称')
-# def todo_delete():
-#     pass
-#
-#
-# @todo.command("list", help='任务列表')
-# @click.option('--date', '-d',  prompt='时间,默认当天', default=datetime.datetime)
-# def todo_list():
-#     pass
-#
-#
-# @todo.command("daily", help='生成日报')
-# @click.option('--date', '-d',  prompt='时间,默认当天', default=datetime.datetime)
-# def todo_daily():
-#     pass
-#
-#
-# @todo.command("weekly", help='生成周报')
-# @click.option('--date', '-d',  prompt='时间归属的周,默认当天', default=datetime.datetime)
-# def todo_weekly():
-#     pass
-#
-#
-# @todo.command("monthly", help='生成月报')
-# @click.option('--date', '-d',  prompt='时间归属的月,默认当天', default=datetime.datetime)
-# def todo_monthly():
-#     pass
-#
-#
-# @todo.command("yearly", help='生成年报')
-# @click.option('--date', '-d',  prompt='时间归属的年,默认当天', default=datetime.datetime)
-# def todo_yearly():
-#     pass
-
 
 # main 函数
 if __name__ == '__main__':

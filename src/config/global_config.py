@@ -2,7 +2,7 @@ import os
 import re
 
 # 版本号  setup.py  ming.py 引用  每次发布 版本+1
-ming_global_version = 2.4
+ming_global_version = 2.5
 
 
 def getVersion():
@@ -35,6 +35,7 @@ tools_dependency_info_arr = [
     ToolsDependency('ip'),
     ToolsDependency('dot', "绘制svg图案,graphviz", 'yay -Syyu graphviz'),
     ToolsDependency('screenfetch', "显示当前操作系统信息", 'yay -Syyu screenfetch'),
+    # ToolsDependency('sar', "显示当前操作系统信息", 'yay -Syyu screenfetch'),
     # ToolsDependency('showError', '测试错误情况', 'test'),
 ]
 
