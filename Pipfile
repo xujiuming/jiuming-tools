@@ -1,7 +1,7 @@
-[[source]]
-url = "http://mirrors.aliyun.com/pypi/simple/"
-verify_ssl = false
-name = "aliyun"
+#[[source]]
+#url = "http://mirrors.aliyun.com/pypi/simple/"
+#verify_ssl = false
+#name = "aliyun"
 
 [packages]
 click = "==7.0"
@@ -21,6 +21,7 @@ setuptools = "*"
 wheel = "*"
 PyX = "*"
 jiuming-tools = {editable = true, path = "."}
+requests-cache = "*"
 
 [dev-packages]
 #[requires]

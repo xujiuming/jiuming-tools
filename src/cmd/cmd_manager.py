@@ -1,10 +1,11 @@
 import click
-import requests
 from lxml import etree
-
+from requests_cache import CachedSession
 
 def search(name):
-    response = requests.get("http://linux.51yip.com/search/{}".format(name))
+    # 增加缓存处理
+    session = CachedSession('jiuming-tools_http_cache', backend='filesystem', use_cache_dir=True)
+    response = session.get("http://linux.51yip.com/search/{}".format(name))
     response.encoding = 'utf-8'
     if response.status_code != 200:
         click.echo(response.text)  # 以文本形式打印网页源码
