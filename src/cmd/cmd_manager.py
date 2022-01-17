@@ -3,6 +3,8 @@ from lxml import etree
 from requests_cache import CachedSession
 
 def search(name):
+    # 处理空格
+    name = name.strip()
     # 增加缓存处理
     session = CachedSession('jiuming-tools_http_cache', backend='filesystem', use_cache_dir=True)
     response = session.get("http://linux.51yip.com/search/{}".format(name))
