@@ -1,7 +1,7 @@
-#[[source]]
-#url = "http://mirrors.aliyun.com/pypi/simple/"
-#verify_ssl = false
-#name = "aliyun"
+[[source]]
+url = "http://mirrors.aliyun.com/pypi/simple/"
+verify_ssl = false
+name = "aliyun"
 
 [packages]
 click = "==7.0"
@@ -13,6 +13,8 @@ speedtest-cli = "*"
 pexpect = "~=4.8.0"
 scapy = "*"
 keyring = "*"
+requests = "*"
+lxml = "*"
 # 编译构建工具
 twine = "*"
 setuptools = "*"
