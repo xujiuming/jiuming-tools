@@ -3,6 +3,7 @@ import os
 
 import click
 
+from src.cmd import cmd_manager
 from src.config import global_config, config_manager
 from src.config.global_config import compile_ip, compile_host_mame, tools_dependency_info_arr
 from src.local import http_server, pc_info, net_manager, pc_test
@@ -331,6 +332,18 @@ def script_list():
 @click.option('--name', '-n', prompt='脚本名称')
 def script_exec(name):
     script_manager.script_exec(name)
+
+
+@cli.group(name="cmd",help="命令工具")
+def cmd():
+    pass
+
+
+@cmd.command('search', help='搜索命令使用方式,信息来源:http://linux.51yip.com/')
+@click.option('--name', '-n', prompt='命令名称')
+def cmd_search(name):
+    cmd_manager.search(name)
+
 
 # main 函数
 if __name__ == '__main__':
