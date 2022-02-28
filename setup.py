@@ -23,7 +23,9 @@ setup(
         'bcrypt==3.1.7',
         'speedtest-cli',
         'pexpect',
-        'scapy'
+        'scapy',
+        'lxml',
+        'requests-cache'
     ],
     # 命令行入口
     entry_points='''
