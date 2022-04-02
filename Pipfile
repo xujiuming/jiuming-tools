@@ -15,6 +15,7 @@ scapy = "*"
 keyring = "*"
 requests = "*"
 lxml = "*"
+peewee = "*"
 # 编译构建工具
 twine = "*"
 setuptools = "*"

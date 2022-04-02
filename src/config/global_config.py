@@ -63,3 +63,5 @@ if not os.path.exists(private_key_default_file):
 compile_ip = re.compile('^((25[0-5]|2[0-4]\d|[01]?\d\d?)\.){3}(25[0-5]|2[0-4]\d|[01]?\d\d?)$')
 compile_host_mame = re.compile('^[a-zA-Z0-9][-a-zA-Z0-9]{0,62}(\.[a-zA-Z0-9][-a-zA-Z0-9]{0,62})+\.?$')
 compile_tun_value = re.compile('^[a-zA-Z0-9]{0,62}:[a-zA-Z0-9]{0,62}$')
+
+

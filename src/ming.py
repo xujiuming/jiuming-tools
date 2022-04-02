@@ -334,7 +334,7 @@ def script_exec(name):
     script_manager.script_exec(name)
 
 
-@cli.group(name="cmd",help="命令工具")
+@cli.group(name="cmd", help="命令工具")
 def cmd():
     pass
 
@@ -343,6 +343,13 @@ def cmd():
 @click.option('--name', '-n', prompt='命令名称')
 def cmd_search(name):
     cmd_manager.search(name)
+
+
+@cli.group(name="task", help="个人任务安排")
+def task():
+    pass
+
+
 
 
 # main 函数
