@@ -40,6 +40,12 @@ tools_dependency_info_arr = [
 ]
 
 # 配置目录存放在 用户根目录
+db_dir = '{}/.jiuming-tools/db'.format(os.path.expanduser('~'))
+if not os.path.exists(db_dir):
+    os.makedirs(db_dir)
+
+
+# 配置目录存放在 用户根目录
 root_config_dir = '{}/.jiuming-tools'.format(os.path.expanduser('~'))
 if not os.path.exists(root_config_dir):
     os.makedirs(root_config_dir)

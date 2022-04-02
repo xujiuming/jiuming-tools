@@ -1,7 +1,9 @@
 from peewee import *
 
 # 创建sqlite
-db = SqliteDatabase('my_database.db')
+from src.config.global_config import db_dir
+
+db = SqliteDatabase(db_dir + '/tools.db')
 
 
 # 定义peewee 元数据
@@ -13,14 +15,13 @@ class BaseModel(Model):
 class MyTask(BaseModel):
     name = CharField()
     content = TextField()
+    over = BooleanField()
+    over_time = TimestampField()
+    create_time = TimestampField()
+    update_time = TimestampField()
 
 
-if __name__ == '__main__':
-    db.connect()
-    db.table_exists(Staff)
-    db.create_tables([Staff])
-    # t = Staff(username='ming')
-    # t.save()
-    l = Staff.select()
-    for i in l:
-        print(i.username)
+db.connect()
+db.create_tables([MyTask])
+
+

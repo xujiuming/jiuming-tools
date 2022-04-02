@@ -6,6 +6,7 @@ import click
 from src.cmd import cmd_manager
 from src.config import global_config, config_manager
 from src.config.global_config import compile_ip, compile_host_mame, tools_dependency_info_arr
+from src.config.peewee_config import MyTask
 from src.local import http_server, pc_info, net_manager, pc_test
 from src.script import script_manager
 from src.server import server_config
@@ -347,9 +348,9 @@ def cmd_search(name):
 
 @cli.group(name="task", help="个人任务安排")
 def task():
-    pass
-
-
+    l = MyTask.select()
+    for i in l:
+        print(i.name)
 
 
 # main 函数
