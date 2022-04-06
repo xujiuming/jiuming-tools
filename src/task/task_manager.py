@@ -14,5 +14,10 @@ def create(name, content, level):
 
 def list():
     t_list = MyTask.select()
-    for i, t in enumerate(t_list):
-        click.echo("{}:[{}任务:{},是否完成:{}]".format(i, t.name, t.content, t.over))
+    for t in t_list:
+        click.echo("{}:[{}任务:{},是否完成:{}]".format(t.id, t.name, t.content, t.over))
+
+
+def over(id):
+    MyTask.update({MyTask.over: True}).where(MyTask.id == id).execute()
+    click.echo("{}任务已完成!".format(id))

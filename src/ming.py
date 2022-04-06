@@ -364,6 +364,12 @@ def task_create(name, content, level):
     task_manager.create(name, content, level)
 
 
+@task.command("over", help='完成任务')
+@click.option('--id', '-id', prompt="任务id")
+def task_over(id):
+    task_manager.over(id)
+
+
 # main 函数
 if __name__ == '__main__':
     cli()
