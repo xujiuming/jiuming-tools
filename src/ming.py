@@ -356,7 +356,7 @@ def task_list():
     task_manager.list()
 
 
-@task.command("task", help='创建任务')
+@task.command("create", help='创建任务')
 @click.option('--name', '-n', prompt='任务名称')
 @click.option('--content', '-c', prompt='任务内容')
 @click.option('--level', '-l', type=int, prompt='任务等级')

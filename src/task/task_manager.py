@@ -14,5 +14,5 @@ def create(name, content, level):
 
 def list():
     t_list = MyTask.select()
-    for t in t_list:
-        click.echo("{}任务:{},是否完成:{}", t.name, t.content, t.over)
+    for i, t in enumerate(t_list):
+        click.echo("{}:[{}任务:{},是否完成:{}]".format(i, t.name, t.content, t.over))

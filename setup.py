@@ -25,7 +25,8 @@ setup(
         'pexpect',
         'scapy',
         'lxml',
-        'requests-cache'
+        'requests-cache',
+        'peewee'
     ],
     # 命令行入口
     entry_points='''
