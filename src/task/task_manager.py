@@ -21,3 +21,8 @@ def list():
 def over(id):
     MyTask.update({MyTask.over: True}).where(MyTask.id == id).execute()
     click.echo("{}任务已完成!".format(id))
+
+
+def remove(id):
+    MyTask.delete_by_id(id)
+    click.echo("{}任务已删除!".format(id))

@@ -370,6 +370,12 @@ def task_over(id):
     task_manager.over(id)
 
 
+@task.command("remove", help='删除任务')
+@click.option('--id', '-id', prompt="任务id")
+def task_remove(id):
+    task_manager.remove(id)
+
+
 # main 函数
 if __name__ == '__main__':
     cli()
