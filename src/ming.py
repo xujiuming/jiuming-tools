@@ -6,10 +6,10 @@ import click
 from src.cmd import cmd_manager
 from src.config import global_config, config_manager
 from src.config.global_config import compile_ip, compile_host_mame, tools_dependency_info_arr
-from src.config.peewee_config import MyTask
 from src.local import http_server, pc_info, net_manager, pc_test
 from src.script import script_manager
 from src.server import server_config
+from src.task import task_manager
 
 
 def validate_ip_or_host_name_type(ctx, param, value):
@@ -348,9 +348,20 @@ def cmd_search(name):
 
 @cli.group(name="task", help="个人任务安排")
 def task():
-    l = MyTask.select()
-    for i in l:
-        print(i.name)
+    pass
+
+
+@task.command("list", help='列表')
+def task_list():
+    task_manager.list()
+
+
+@task.command("task", help='创建任务')
+@click.option('--name', '-n', prompt='任务名称')
+@click.option('--content', '-c', prompt='任务内容')
+@click.option('--level', '-l', type=int, prompt='任务等级')
+def task_create(name, content, level):
+    task_manager.create(name, content, level)
 
 
 # main 函数

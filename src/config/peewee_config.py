@@ -15,6 +15,7 @@ class BaseModel(Model):
 class MyTask(BaseModel):
     name = CharField()
     content = TextField()
+    level = IntegerField()
     over = BooleanField()
     over_time = TimestampField()
     create_time = TimestampField()
@@ -23,5 +24,3 @@ class MyTask(BaseModel):
 
 db.connect()
 db.create_tables([MyTask])
-
-
