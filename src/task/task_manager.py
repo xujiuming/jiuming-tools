@@ -13,7 +13,6 @@ def create(name, content, level):
 
 
 def list(model, date, search):
-    print(model, date, search)
     expressions = None
     if str(model).upper() == 'FALSE':
         expressions = (MyTask.over == False)
@@ -38,9 +37,31 @@ id:{}
         click.echo(s)
 
 
+def select():
+    f_task_list = MyTask.select().where(MyTask.over == False)
+    i_id_map = {}
+    for i, t in enumerate(f_task_list):
+        i_id_map[str(i)] = t.id
+        click.echo("{},id:{},name:{}".format(i, t.id, t.name))
+    r = click.prompt(
+        "选择任务编号:",
+        type=click.Choice(i_id_map.keys()),
+        show_default=False,
+    )
+    return i_id_map[r]
+
+
+def select_over():
+    over(select())
+
+
 def over(id):
     MyTask.update({MyTask.over: True}).where(MyTask.id == id).execute()
     click.echo("{}任务已完成!".format(id))
+
+
+def select_remove():
+    remove(select())
 
 
 def remove(id):

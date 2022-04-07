@@ -1,5 +1,4 @@
 # -*- coding:utf-8 -*-
-import datetime
 import os
 
 import click
@@ -353,7 +352,7 @@ def task():
 
 
 @task.command("list", help='列表')
-@click.option("--model", '-m', type=click.Choice(['ALL', 'TRUE', 'FALSE'], case_sensitive=False), default='TRUE',
+@click.option("--model", '-m', type=click.Choice(['ALL', 'TRUE', 'FALSE'], case_sensitive=False), default='FALSE',
               help='模式')
 @click.option('--date', '-d', type=click.DateTime(formats=['%Y%m%d', '%Y-%m-%d']),
               # default=datetime.datetime.today().strftime('%Y%m%d'),
@@ -372,15 +371,21 @@ def task_create(name, content, level):
 
 
 @task.command("over", help='完成任务')
-@click.option('--id', '-id', prompt="任务id")
+@click.option('--id', '-id', help="任务id")
 def task_over(id):
-    task_manager.over(id)
+    if id is None:
+        task_manager.select_over()
+    else:
+        task_manager.over(id)
 
 
 @task.command("remove", help='删除任务')
-@click.option('--id', '-id', prompt="任务id")
+@click.option('--id', '-id', help="任务id")
 def task_remove(id):
-    task_manager.remove(id)
+    if id is None:
+        task_manager.select_remove()
+    else:
+        task_manager.remove(id)
 
 
 # main 函数
