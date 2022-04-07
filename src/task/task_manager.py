@@ -32,8 +32,9 @@ def list(model, date, search):
 id:{}
 名称:{}
 内容:{}
-等级:{}        
-        """.format(t.id, t.name, t.content, t.level)
+等级:{}  
+是否完成:{}      
+        """.format(t.id, t.name, t.content, t.level, t.over)
         click.echo(s)
 
 
