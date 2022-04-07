@@ -1,4 +1,5 @@
 # -*- coding:utf-8 -*-
+import datetime
 import os
 
 import click
@@ -352,8 +353,14 @@ def task():
 
 
 @task.command("list", help='列表')
-def task_list():
-    task_manager.list()
+@click.option("--model", '-m', type=click.Choice(['ALL', 'TRUE', 'FALSE'], case_sensitive=False), default='TRUE',
+              help='模式')
+@click.option('--date', '-d', type=click.DateTime(formats=['%Y%m%d', '%Y-%m-%d']),
+              # default=datetime.datetime.today().strftime('%Y%m%d'),
+              help='时间,yyyyMMdd或者yyyy-MM-dd格式')
+@click.option('--search', '-s', type=str, help='全文检索相关的任务')
+def task_list(model, date, search):
+    task_manager.list(model, date, search)
 
 
 @task.command("create", help='创建任务')
