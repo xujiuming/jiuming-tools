@@ -2,7 +2,7 @@ import os
 import re
 
 # 版本号  setup.py  ming.py 引用  每次发布 版本+1
-ming_global_version = 2.12
+ming_global_version = 2.13
 
 
 def getVersion():
@@ -40,7 +40,7 @@ tools_dependency_info_arr = [
 ]
 
 # 配置目录存放在 用户根目录
-db_dir = '{}/.jiuming-tools/db'.format(os.path.expanduser('~'))
+db_dir = '{}/.jiuming-tools/config/db'.format(os.path.expanduser('~'))
 if not os.path.exists(db_dir):
     os.makedirs(db_dir)
 

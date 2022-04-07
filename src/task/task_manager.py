@@ -1,3 +1,4 @@
+import datetime
 import time
 
 import click
@@ -33,8 +34,11 @@ id:{}
 名称:{}
 内容:{}
 等级:{}  
-是否完成:{}      
-        """.format(t.id, t.name, t.content, t.level, t.over)
+是否完成:{}  
+完成时间:{}    
+创建时间:{}
+修改时间:{}
+        """.format(t.id, t.name, t.content, t.level, t.over, t.over_time, t.create_time, t.update_time)
         click.echo(s)
 
 
@@ -57,7 +61,7 @@ def select_over():
 
 
 def over(id):
-    MyTask.update({MyTask.over: True}).where(MyTask.id == id).execute()
+    MyTask.update({MyTask.over: True, MyTask.over_time: time.time()}).where(MyTask.id == id).execute()
     click.echo("{}任务已完成!".format(id))
 
 
