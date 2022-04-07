@@ -29,7 +29,13 @@ def list(model, date, search):
 
     t_list = MyTask.select().where(expressions)
     for t in t_list:
-        click.echo("{}:[{}任务:{},是否完成:{}]".format(t.id, t.name, t.content, t.over))
+        s = """
+id:{}
+名称:{}
+内容:{}
+等级:{}        
+        """.format(t.id, t.name, t.content, t.level)
+        click.echo(s)
 
 
 def over(id):
