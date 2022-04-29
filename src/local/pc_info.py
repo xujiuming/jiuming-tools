@@ -1,4 +1,5 @@
 import asyncio
+import json
 import os
 import re
 import subprocess
@@ -123,6 +124,54 @@ class cpuInfo(object):
 def byteToGb(byteNumber):
     # b   kb     mb      gb
     return str(format(byteNumber / 1024 / 1024 / 1024, '.3'))
+
+
+def byteToMb(byteNumber):
+    # b   kb     mb      gb
+    return str(format(byteNumber / 1024 / 1024, '.3'))
+
+
+def pid_info(pid, details):
+    """
+    使用psutil 探测指定pid的综合信息 方便判断问题节点
+    https://psutil.readthedocs.io/en/latest/#process-class
+    获取对应id的进程综合信息
+    cpu、内存、磁盘、文件描述符等等信息
+    :return:
+    """
+    p = psutil.Process(pid)
+    file_mem_map_info_str = ""
+    for m in p.memory_maps():
+        file_mem_map_info_str = file_mem_map_info_str + "\r\n" + m[0] + "使用rss:{}MB,size:{}MB".format(byteToMb(m[1]), byteToMb(m[2]))
+
+    mem_full_info =  p.memory_full_info()
+    mem_full_info_str = "使用总内存大小{}MB,swap大小{}MB".format(byteToMb(mem_full_info[8]),byteToMb(mem_full_info[9]))
+
+    base_str = """
+PID:{}
+name:{}    
+执行用户:{}
+进程可执行文件路径:{}
+进程使用的内存大小信息:{}
+内存引用文件占用内存信息:{}
+此进程当前打开的文件描述符数:{}
+此进程当前使用的线程数:{}
+此进程和总物理内存比例:{}
+进程打开的套接字连接:{}
+""".format(p.pid,
+           p.name(),
+           p.username(),
+           p.exe(),
+           mem_full_info_str,
+           file_mem_map_info_str,
+           p.num_fds(),
+           p.num_threads(),
+           p.memory_percent(),
+           p.connections()
+           )
+    click.echo(base_str)
+    if details:
+        click.echo("详细信息:\r\n" + json.dumps(p.as_dict(), indent=1, separators=(', ', ': '), ensure_ascii=False))
 
 
 def detect():

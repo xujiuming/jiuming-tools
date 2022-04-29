@@ -242,6 +242,13 @@ def test_network(threads):
     pc_test.testNetwork(threads)
 
 
+@local.command('pid-info', help='获取指定pid进程的信息')
+@click.option('--pid', '-pid', type=int, prompt='线程PID', help='线程PID')
+@click.option('--details', '-d', type=click.BOOL, default=False, help='显示详情')
+def pid_info(pid, details):
+    pc_info.pid_info(pid, details)
+
+
 # @local.command('detect', help='侦测当前设备各项资源')
 # def detect():
 #     pc_info.detect()

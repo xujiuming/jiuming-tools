@@ -2,7 +2,7 @@ import os
 import re
 
 # 版本号  setup.py  ming.py 引用  每次发布 版本+1
-ming_global_version = 2.13
+ming_global_version = 2.14
 
 
 def getVersion():
