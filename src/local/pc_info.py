@@ -134,11 +134,13 @@ def pid_info(pid, details):
     p = psutil.Process(pid)
     file_mem_map_info_str = ""
     for m in p.memory_maps():
-        file_mem_map_info_str = file_mem_map_info_str + "\r\n" + m[0] + "使用rss:{},size:{}".format(byte_length_format(m[1]),
-                                                                                                      byte_length_format(m[2]))
+        file_mem_map_info_str = file_mem_map_info_str + "\r\n" + m[0] + "使用rss:{},size:{}".format(
+            byte_length_format(m[1]),
+            byte_length_format(m[2]))
 
     mem_full_info = p.memory_full_info()
-    mem_full_info_str = "使用总内存大小{},swap大小{}".format(byte_length_format(mem_full_info[8]), byte_length_format(mem_full_info[9]))
+    mem_full_info_str = "使用总内存大小{},swap大小{}".format(byte_length_format(mem_full_info[8]),
+                                                    byte_length_format(mem_full_info[9]))
 
     base_str = """
 PID:{}
@@ -197,7 +199,8 @@ def detect_mem():
     mem_info = """
     物理内存:{}/{},{}
     虚拟内存:{}/{},{}
-    """.format(byte_length_format(v_mem.used()), byte_length_format(v_mem.total()), 0, byte_length_format(s_mem.used), byte_length_format(s_mem.total), 0)
+    """.format(byte_length_format(v_mem.used()), byte_length_format(v_mem.total()), 0, byte_length_format(s_mem.used),
+               byte_length_format(s_mem.total), 0)
     click.echo(mem_info)
 
 
@@ -229,6 +232,9 @@ def mem_info(top, pid, details):
     for p in p_arr:
         for m in p.memory_maps():
             mem_info_arr.append(m)
+
+    # 过滤 anon  heap  stack 数据
+    mem_info_arr = [t for t in mem_info_arr if not (t[0] == '[anon]' or t[0] == '[heap]' or t[0] == '[stack]')]
     mem_info_arr.sort(key=lambda t: t[2], reverse=True)
     mem_info_arr = mem_info_arr[:top]
     for i, m in enumerate(mem_info_arr):
