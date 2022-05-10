@@ -7,6 +7,8 @@ import subprocess
 import click
 import psutil
 
+from src.utils.convertUtils import byte_length_format
+
 
 async def asyncGetScreenfetch():
     # 尝试执行 screenfetch
@@ -121,16 +123,6 @@ class cpuInfo(object):
         self.modelName = modelName
 
 
-def byteToGb(byteNumber):
-    # b   kb     mb      gb
-    return str(format(byteNumber / 1024 / 1024 / 1024, '.3'))
-
-
-def byteToMb(byteNumber):
-    # b   kb     mb      gb
-    return str(format(byteNumber / 1024 / 1024, '.3'))
-
-
 def pid_info(pid, details):
     """
     使用psutil 探测指定pid的综合信息 方便判断问题节点
@@ -142,11 +134,11 @@ def pid_info(pid, details):
     p = psutil.Process(pid)
     file_mem_map_info_str = ""
     for m in p.memory_maps():
-        file_mem_map_info_str = file_mem_map_info_str + "\r\n" + m[0] + "使用rss:{}MB,size:{}MB".format(byteToMb(m[1]),
-                                                                                                      byteToMb(m[2]))
+        file_mem_map_info_str = file_mem_map_info_str + "\r\n" + m[0] + "使用rss:{},size:{}".format(byte_length_format(m[1]),
+                                                                                                      byte_length_format(m[2]))
 
     mem_full_info = p.memory_full_info()
-    mem_full_info_str = "使用总内存大小{}MB,swap大小{}MB".format(byteToMb(mem_full_info[8]), byteToMb(mem_full_info[9]))
+    mem_full_info_str = "使用总内存大小{},swap大小{}".format(byte_length_format(mem_full_info[8]), byte_length_format(mem_full_info[9]))
 
     base_str = """
 PID:{}
@@ -205,7 +197,7 @@ def detect_mem():
     mem_info = """
     物理内存:{}/{},{}
     虚拟内存:{}/{},{}
-    """.format(byteToGb(v_mem.used()), byteToGb(v_mem.total()), 0, byteToGb(s_mem.used), byteToGb(s_mem.total), 0)
+    """.format(byte_length_format(v_mem.used()), byte_length_format(v_mem.total()), 0, byte_length_format(s_mem.used), byte_length_format(s_mem.total), 0)
     click.echo(mem_info)
 
 
@@ -240,6 +232,6 @@ def mem_info(top, pid, details):
     mem_info_arr.sort(key=lambda t: t[2], reverse=True)
     mem_info_arr = mem_info_arr[:top]
     for i, m in enumerate(mem_info_arr):
-        click.echo("{}:{},rss[{}]MB,size[{}]MB".format(i, m[0], byteToMb(m[1]), byteToMb(m[2])))
+        click.echo("{}:{},rss[{}],size[{}]".format(i, m[0], byte_length_format(m[1]), byte_length_format(m[2])))
         if details:
             click.echo("详细信息:\r\n" + json.dumps(m, indent=1, separators=(', ', ': '), ensure_ascii=False))
