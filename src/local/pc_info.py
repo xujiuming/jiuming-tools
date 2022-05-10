@@ -142,10 +142,11 @@ def pid_info(pid, details):
     p = psutil.Process(pid)
     file_mem_map_info_str = ""
     for m in p.memory_maps():
-        file_mem_map_info_str = file_mem_map_info_str + "\r\n" + m[0] + "使用rss:{}MB,size:{}MB".format(byteToMb(m[1]), byteToMb(m[2]))
+        file_mem_map_info_str = file_mem_map_info_str + "\r\n" + m[0] + "使用rss:{}MB,size:{}MB".format(byteToMb(m[1]),
+                                                                                                      byteToMb(m[2]))
 
-    mem_full_info =  p.memory_full_info()
-    mem_full_info_str = "使用总内存大小{}MB,swap大小{}MB".format(byteToMb(mem_full_info[8]),byteToMb(mem_full_info[9]))
+    mem_full_info = p.memory_full_info()
+    mem_full_info_str = "使用总内存大小{}MB,swap大小{}MB".format(byteToMb(mem_full_info[8]), byteToMb(mem_full_info[9]))
 
     base_str = """
 PID:{}
@@ -222,3 +223,23 @@ def detect_file_desc():
 
 def detect_io():
     pass
+
+
+def mem_info(top, pid, details):
+    p_arr = []
+    if pid is not None:
+        p_arr.append(psutil.Process(pid))
+    else:
+        for p in psutil.process_iter():
+            p_arr.append(p)
+
+    mem_info_arr = []
+    for p in p_arr:
+        for m in p.memory_maps():
+            mem_info_arr.append(m)
+    mem_info_arr.sort(key=lambda t: t[2], reverse=True)
+    mem_info_arr = mem_info_arr[:top]
+    for i, m in enumerate(mem_info_arr):
+        click.echo("{}:{},rss[{}]MB,size[{}]MB".format(i, m[0], byteToMb(m[1]), byteToMb(m[2])))
+        if details:
+            click.echo("详细信息:\r\n" + json.dumps(m, indent=1, separators=(', ', ': '), ensure_ascii=False))

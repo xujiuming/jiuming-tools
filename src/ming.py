@@ -242,11 +242,19 @@ def test_network(threads):
     pc_test.testNetwork(threads)
 
 
-@local.command('pid-info', help='获取指定pid进程的信息')
+@local.command('pid-info', help='获取指定pid进程的信息,需要访问对应进程的权限')
 @click.option('--pid', '-pid', type=int, prompt='线程PID', help='线程PID')
 @click.option('--details', '-d', type=click.BOOL, default=False, help='显示详情')
 def pid_info(pid, details):
     pc_info.pid_info(pid, details)
+
+
+@local.command('mem-info', help='获取指定pid进程的信息,需要root权限')
+@click.option('--top', '-top', type=int, default=10, help="显示topN的信息,默认显示top10")
+@click.option('--pid', '-pid', type=int, help='线程PID')
+@click.option('--details', '-d', type=click.BOOL, default=False, help='显示详情')
+def mem_info(top, pid, details):
+    pc_info.mem_info(top, pid, details)
 
 
 # @local.command('detect', help='侦测当前设备各项资源')
