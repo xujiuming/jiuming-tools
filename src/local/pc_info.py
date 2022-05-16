@@ -6,6 +6,7 @@ import subprocess
 
 import click
 import psutil
+from prettytable import PrettyTable,MARKDOWN
 
 from src.utils.convertUtils import byte_length_format
 
@@ -237,7 +238,16 @@ def mem_info(top, pid, details):
     mem_info_arr = [t for t in mem_info_arr if not (t[0] == '[anon]' or t[0] == '[heap]' or t[0] == '[stack]')]
     mem_info_arr.sort(key=lambda t: t[2], reverse=True)
     mem_info_arr = mem_info_arr[:top]
+
+    # 创建表格
+    t_table = PrettyTable(['file', 'rss', 'size'])
     for i, m in enumerate(mem_info_arr):
-        click.echo("{}:{},rss[{}],size[{}]".format(i, m[0], byte_length_format(m[1]), byte_length_format(m[2])))
+        t_table.add_row([m[0], byte_length_format(m[1]), byte_length_format(m[2])])
         if details:
             click.echo("详细信息:\r\n" + json.dumps(m, indent=1, separators=(', ', ': '), ensure_ascii=False))
+    # 设置对齐方式
+    t_table.align = "l"
+    # 设置表格最长列
+    t_table.max_width = 60
+    t_table.border = True
+    click.echo(t_table)

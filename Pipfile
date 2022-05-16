@@ -16,12 +16,13 @@ keyring = "*"
 requests = "*"
 lxml = "*"
 peewee = "*"
+prettytable = "*"
 # 编译构建工具
 twine = "*"
 setuptools = "*"
 wheel = "*"
 PyX = "*"
-jiuming-tools = {editable = true, path = "."}
+jiuming-tools = { editable = true, path = "." }
 requests-cache = "*"
 
 [dev-packages]

@@ -26,7 +26,8 @@ setup(
         'scapy',
         'lxml',
         'requests-cache',
-        'peewee'
+        'peewee',
+        'prettytable'
     ],
     # 命令行入口
     entry_points='''
