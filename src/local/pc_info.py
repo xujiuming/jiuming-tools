@@ -6,7 +6,7 @@ import subprocess
 
 import click
 import psutil
-from prettytable import PrettyTable,MARKDOWN
+from prettytable import PrettyTable, MARKDOWN
 
 from src.utils.convertUtils import byte_length_format
 
@@ -248,6 +248,5 @@ def mem_info(top, pid, details):
     # 设置对齐方式
     t_table.align = "l"
     # 设置表格最长列
-    t_table.max_width = 60
-    t_table.border = True
+    t_table.max_width = 80
     click.echo(t_table)
