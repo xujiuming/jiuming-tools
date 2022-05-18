@@ -2,6 +2,7 @@
 import os
 
 import click
+from prettytable import PrettyTable
 
 from src.cmd import cmd_manager
 from src.config import global_config, config_manager
@@ -75,20 +76,14 @@ def check_tools_dependency(ctx, param, value):
             for f in os.listdir(bin_path):
                 cmd_name_set.add(f)
     # 获取系统依赖工具列表
-    no_install_tools_name = []
-    echo_str = "检查依赖。。。。\n"
+    t_table = PrettyTable(['name', "desc", 'result', 'remark'])
+    # 设置对齐方式
+    t_table.align = "l"
+    # 设置表格最长列
+    t_table.max_width = 80
     for i in tools_dependency_info_arr:
-        echo_str += "开始检测:{}\n备注:{}\n".format(i.cmd, i.desc)
-        if i.cmd in cmd_name_set:
-            echo_str += "{}已经安装!\n".format(i.cmd)
-        else:
-            echo_str += "{}未安装!安装示例:{}\n".format(i.cmd, i.install_demo_cmd)
-            no_install_tools_name.append(i.cmd)
-        echo_str += "--------------------------------------\n"
-    echo_str += "依赖检查完毕!\n"
-    click.echo(echo_str)
-    if len(no_install_tools_name) > 0:
-        click.echo(click.style("{}未安装!部分功能无法正常运行!\n".format(no_install_tools_name), fg='red'))
+        t_table.add_row([i.cmd, i.desc, cmd_name_set.__contains__(i.cmd), i.install_demo_cmd])
+    click.echo(t_table)
     ctx.exit()
 
 
