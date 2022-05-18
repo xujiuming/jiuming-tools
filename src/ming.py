@@ -87,24 +87,10 @@ def check_tools_dependency(ctx, param, value):
     ctx.exit()
 
 
-def init_tools(ctx, param, value):
-    # 判断当前shell 根据不同shell 追加内容
-    # bash  在~/.bashrc 追加  eval "$(_M_COMPLETE=source m)"
-
-    # zsh 在~/.zshrc 追加内容  eval "$(_M_COMPLETE=source_zsh m)"
-
-    # 添加脚本目录到PATH下
-    # todo ming ？ 是否做软链接建立脚本别名?
-
-    pass
-
 
 @click.group()
 @click.option('--version', '-v', help='工具版本', is_flag=True, callback=print_version, expose_value=False, is_eager=True)
 @click.option('--check', '-c', help='检测当前环境下工具依赖是否完整', is_flag=True, callback=check_tools_dependency,
-              expose_value=False,
-              is_eager=True)
-@click.option('--init', '-i', help='初始化项目(命令提示、添加shell脚本目录到PATH中)', is_flag=True, callback=init_tools,
               expose_value=False,
               is_eager=True)
 def cli():
