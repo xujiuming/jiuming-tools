@@ -1,12 +1,12 @@
 # -*- coding:utf-8 -*-
 from setuptools import setup, find_packages
 
-from src.config.global_config import getVersion
+from src.config.global_config import get_version
 
 setup(
     name='jiuming-tools',
     # 版本 如果需要发布更新 需要调整版本号
-    version=getVersion(),
+    version=get_version(),
     packages=find_packages(),
     include_package_data=True,
     # data_files=[

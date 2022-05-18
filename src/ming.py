@@ -45,7 +45,7 @@ def print_version(ctx, param, value):
     bash:在.bashrc末尾添加 eval "$(_M_COMPLETE=source m)"
     zsh:在.zshrc末尾添加 eval "$(_M_COMPLETE=source_zsh m)"
     依赖的工具：{}
-    jiuming-tools Version {}""".format(tools_lib_str, global_config.getVersion())
+    jiuming-tools Version {}""".format(tools_lib_str, global_config.get_version())
     click.echo(version_info)
     ctx.exit()
 

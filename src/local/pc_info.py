@@ -11,7 +11,7 @@ from prettytable import PrettyTable, MARKDOWN
 from src.utils.convertUtils import byte_length_format
 
 
-async def asyncGetScreenfetch():
+async def async_get_screenfetch():
     # 尝试执行 screenfetch
     try:
         res = await asyncio.create_subprocess_shell("screenfetch", stdout=asyncio.subprocess.PIPE,
@@ -95,7 +95,7 @@ def echo_pc_info():
 
     # 异步执行 screenfetch
     loop = asyncio.get_event_loop()
-    screenfetch_future = asyncio.ensure_future(asyncGetScreenfetch(), loop=loop)
+    screenfetch_future = asyncio.ensure_future(async_get_screenfetch(), loop=loop)
     loop.run_until_complete(screenfetch_future)
     screenfetch_result = screenfetch_future.result()
     if screenfetch_future is not None:
