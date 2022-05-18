@@ -87,7 +87,6 @@ def check_tools_dependency(ctx, param, value):
     ctx.exit()
 
 
-
 @click.group()
 @click.option('--version', '-v', help='工具版本', is_flag=True, callback=print_version, expose_value=False, is_eager=True)
 @click.option('--check', '-c', help='检测当前环境下工具依赖是否完整', is_flag=True, callback=check_tools_dependency,
@@ -236,6 +235,12 @@ def pid_info(pid, details):
 @click.option('--details', '-d', type=click.BOOL, default=False, help='显示详情')
 def mem_info(top, pid, details):
     pc_info.mem_info(top, pid, details)
+
+
+@local.command('net-info', help='获取网络信息,需要root权限')
+@click.option('--details', '-d', type=click.BOOL, default=False, help='显示详情')
+def net_info(details):
+    pass
 
 
 # @local.command('detect', help='侦测当前设备各项资源')
