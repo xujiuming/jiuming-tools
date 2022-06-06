@@ -35,6 +35,7 @@ tools_dependency_info_arr = [
     ToolsDependency('ip'),
     ToolsDependency('dot', "绘制svg图案,graphviz", 'yay -Syyu graphviz'),
     ToolsDependency('screenfetch', "显示当前操作系统信息", 'yay -Syyu screenfetch'),
+    ToolsDependency('redis-cli', "redis-cli", 'yay -S redis'),
     # ToolsDependency('sar', "显示当前操作系统信息", 'yay -Syyu screenfetch'),
     # ToolsDependency('showError', '测试错误情况', 'test'),
 ]
