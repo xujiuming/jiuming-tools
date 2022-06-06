@@ -347,6 +347,27 @@ def cmd_search(name):
     cmd_manager.search(name)
 
 
+@cli.group(name="redis", help="redis信息")
+def redis():
+    pass
+
+
+@redis.command('list', help="列表")
+def redis_list():
+    pass
+
+@redis.command('create',help='创建配置')
+def redis_create():
+    pass
+
+@redis.command('remove',help='删除配置')
+def redis_remove():
+    pass
+
+@redis.command('connect',help='连接服务')
+def redis_connect():
+    pass
+
 @cli.group(name="task", help="个人任务安排")
 def task():
     pass

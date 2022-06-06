@@ -109,7 +109,7 @@ def open_ssh_password_tty(host, port, username, password):
     p_ssh = pexpect.spawn(command=cmd)
     # 输入密码
     try:
-        p_ssh.expect("password:", timeout=3)
+        p_ssh.expect("password:", timeout=10)
         p_ssh.sendline(password)
     except pexpect.exceptions.TIMEOUT:
         click.echo(click.style("等待输入密码消息超时!", fg='yellow'))
@@ -139,7 +139,7 @@ def open_sftp_password_tty(host, port, username, password, cwd_path):
     p_sftp = pexpect.spawn(command=cmd, cwd=cwd_path)
     # 输入密码
     try:
-        p_sftp.expect("password:", timeout=3)
+        p_sftp.expect("password:", timeout=10)
         p_sftp.sendline(password)
     except pexpect.exceptions.TIMEOUT:
         click.echo(click.style("等待输入密码消息超时!", fg='yellow'))

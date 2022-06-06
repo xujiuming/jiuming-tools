@@ -24,6 +24,7 @@ wheel = "*"
 PyX = "*"
 jiuming-tools = { editable = true, path = "." }
 requests-cache = "*"
+redis = "*"
 
 [dev-packages]
 #[requires]
