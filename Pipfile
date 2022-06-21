@@ -25,6 +25,7 @@ PyX = "*"
 jiuming-tools = { editable = true, path = "." }
 requests-cache = "*"
 redis = "*"
+paramiko = "*"
 
 [dev-packages]
 #[requires]

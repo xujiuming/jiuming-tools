@@ -346,33 +346,6 @@ def cmd():
 def cmd_search(name):
     cmd_manager.search(name)
 
-
-@cli.group(name="db", help="db管理")
-def db():
-    pass
-
-
-@db.command('list', help="列表")
-def db_list():
-    pass
-
-@db.command('create',help='创建配置')
-def db_create():
-    pass
-
-@db.command('remove',help='删除配置')
-def db_remove():
-    pass
-
-@db.command('connect',help='连接服务')
-def db_connect():
-    pass
-
-@cli.group(name="task", help="个人任务安排")
-def task():
-    pass
-
-
 @task.command("list", help='列表')
 @click.option("--model", '-m', type=click.Choice(['ALL', 'TRUE', 'FALSE'], case_sensitive=False), default='FALSE',
               help='模式')
