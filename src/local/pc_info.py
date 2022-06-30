@@ -250,3 +250,52 @@ def mem_info(top, pid, details):
     # 设置表格最长列
     t_table.max_width = 80
     click.echo(t_table)
+
+
+def net_info(details):
+    pass
+
+
+def disk_info():
+    disk_partitions = psutil.disk_partitions()
+    d_p_table = PrettyTable(['设备驱动号', '挂载名称', '文件系统类型', '挂载选项', '使用量'])
+    for d in disk_partitions:
+        t_l = [d.device, d.mountpoint, d.fstype, d.opts]
+        t_d_u = psutil.disk_usage(d.mountpoint)
+        t_l.append("total:{},used:{},free:{},percent:{}%".format(byte_length_format(t_d_u.total),
+                                                                 byte_length_format(t_d_u.used),
+                                                                 byte_length_format(t_d_u.free),
+                                                                 t_d_u.percent
+                                                                 ))
+        d_p_table.add_row(t_l)
+    # 设置对齐方式
+    d_p_table.align = "l"
+    # 设置表格最长列
+    d_p_table.max_width = 80
+    click.echo(d_p_table)
+
+    # 输出当前磁盘的详细io信息
+    try:
+        disk_stat_dict = psutil.disk_io_counters(perdisk=True)
+        d_s_table = PrettyTable(
+            ['设备名', '读取次数', '写入次数', '读取的字节数', '写入的字节数', '读取耗时(ms)', '写入耗时(ms)', '实际io耗费时间(ms)', '合并读取次数', '合并写入次数'])
+        for key in disk_stat_dict.keys():
+            t = disk_stat_dict[key]
+            d_s_table.add_row([key,
+                               t.read_count,
+                               t.write_count,
+                               t.read_bytes,
+                               t.write_bytes,
+                               t.read_time,
+                               t.write_time,
+                               t.busy_time,
+                               t.read_merged_count,
+                               t.write_merged_count
+                               ])
+
+        d_s_table.align = "l"
+        # 设置表格最长列
+        d_s_table.max_width = 80
+        click.echo(d_s_table)
+    except Exception as e:
+        click.echo(click.style("获取磁盘io统计计数信息异常!" + e, fg='red'))

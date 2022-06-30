@@ -240,7 +240,12 @@ def mem_info(top, pid, details):
 @local.command('net-info', help='获取网络信息,需要root权限')
 @click.option('--details', '-d', type=click.BOOL, default=False, help='显示详情')
 def net_info(details):
-    pass
+    pc_info.net_info(details)
+
+
+@local.command('disk-info', help='获取磁盘新消息')
+def disk_info():
+    pc_info.disk_info()
 
 
 # @local.command('detect', help='侦测当前设备各项资源')
@@ -346,6 +351,11 @@ def cmd():
 def cmd_search(name):
     cmd_manager.search(name)
 
+
+@cli.group(name="task", help="任务管理")
+def task():
+    pass
+
 @task.command("list", help='列表')
 @click.option("--model", '-m', type=click.Choice(['ALL', 'TRUE', 'FALSE'], case_sensitive=False), default='FALSE',
               help='模式')
@@ -355,6 +365,7 @@ def cmd_search(name):
 @click.option('--search', '-s', type=str, help='全文检索相关的任务')
 def task_list(model, date, search):
     task_manager.list(model, date, search)
+
 
 
 @task.command("create", help='创建任务')
