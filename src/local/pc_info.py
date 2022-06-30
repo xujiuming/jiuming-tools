@@ -278,14 +278,14 @@ def disk_info():
     try:
         disk_stat_dict = psutil.disk_io_counters(perdisk=True)
         d_s_table = PrettyTable(
-            ['设备名', '读取次数', '写入次数', '读取的字节数', '写入的字节数', '读取耗时(ms)', '写入耗时(ms)', '实际io耗费时间(ms)', '合并读取次数', '合并写入次数'])
+            ['设备名', '读取次数', '写入次数', '读取大小', '写入大小', '读取耗时(ms)', '写入耗时(ms)', '实际io耗费时间(ms)', '合并读取次数', '合并写入次数'])
         for key in disk_stat_dict.keys():
             t = disk_stat_dict[key]
             d_s_table.add_row([key,
                                t.read_count,
                                t.write_count,
-                               t.read_bytes,
-                               t.write_bytes,
+                               byte_length_format(t.read_bytes),
+                               byte_length_format(t.write_bytes),
                                t.read_time,
                                t.write_time,
                                t.busy_time,
