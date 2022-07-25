@@ -352,48 +352,6 @@ def cmd_search(name):
     cmd_manager.search(name)
 
 
-@cli.group(name="task", help="任务管理")
-def task():
-    pass
-
-@task.command("list", help='列表')
-@click.option("--model", '-m', type=click.Choice(['ALL', 'TRUE', 'FALSE'], case_sensitive=False), default='FALSE',
-              help='模式')
-@click.option('--date', '-d', type=click.DateTime(formats=['%Y%m%d', '%Y-%m-%d']),
-              # default=datetime.datetime.today().strftime('%Y%m%d'),
-              help='时间,yyyyMMdd或者yyyy-MM-dd格式')
-@click.option('--search', '-s', type=str, help='全文检索相关的任务')
-def task_list(model, date, search):
-    task_manager.list(model, date, search)
-
-
-
-@task.command("create", help='创建任务')
-@click.option('--name', '-n', prompt='任务名称')
-@click.option('--content', '-c', prompt='任务内容')
-@click.option('--level', '-l', type=int, prompt='任务等级')
-def task_create(name, content, level):
-    task_manager.create(name, content, level)
-
-
-@task.command("over", help='完成任务')
-@click.option('--id', '-id', help="任务id")
-def task_over(id):
-    if id is None:
-        task_manager.select_over()
-    else:
-        task_manager.over(id)
-
-
-@task.command("remove", help='删除任务')
-@click.option('--id', '-id', help="任务id")
-def task_remove(id):
-    if id is None:
-        task_manager.select_remove()
-    else:
-        task_manager.remove(id)
-
-
 # main 函数
 if __name__ == '__main__':
     cli()
