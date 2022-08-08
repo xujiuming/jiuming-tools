@@ -10,7 +10,6 @@ from src.config.global_config import compile_ip, compile_host_mame, tools_depend
 from src.local import http_server, pc_info, net_manager, pc_test
 from src.script import script_manager
 from src.server import server_config
-from src.task import task_manager
 
 
 def validate_ip_or_host_name_type(ctx, param, value):
@@ -246,11 +245,6 @@ def net_info(details):
 @local.command('disk-info', help='获取磁盘新消息')
 def disk_info():
     pc_info.disk_info()
-
-
-# @local.command('detect', help='侦测当前设备各项资源')
-# def detect():
-#     pc_info.detect()
 
 
 # ----------------------------------- tools config manager  -----------------------------------------------------------

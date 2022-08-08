@@ -16,11 +16,11 @@ setup(
     platforms='linux',
     # 需要的依赖
     install_requires=[
-        'Click==7.0',
-        'psutil==5.6.7',
-        'PyYAML==5.2',
-        'gitpython==3.1.1',
-        'bcrypt==3.1.7',
+        'Click',
+        'psutil',
+        'PyYAML',
+        'gitpython',
+        'bcrypt',
         'speedtest-cli',
         'pexpect',
         'scapy',
