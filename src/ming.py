@@ -38,6 +38,7 @@ def print_version(ctx, param, value):
 
     tools_lib_str = ','.join([i.cmd for i in tools_dependency_info_arr])
     version_info = """
+    用来管理支持ssh的服务器和一些本地环境的信息查看功能     
     作者:ming 
     仅适用linux 其他平台兼容性不做保证
     启用自动补全:
