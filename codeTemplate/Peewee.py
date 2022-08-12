@@ -18,6 +18,8 @@ if __name__ == '__main__':
     db.connect()
     db.table_exists(Staff)
     db.create_tables([Staff])
+    print( db.get_tables())
+    print( db.get_columns('staff'))
     # t = Staff(username='ming')
     # t.save()
     l = Staff.select()
