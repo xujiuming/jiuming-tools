@@ -134,6 +134,7 @@ def server_sftp(name, cwd_path):
     else:
         click.echo("暂不支持{}类型服务器认证方式!".format(sc.auth_type))
 
+
 def open_sftp_password_tty(host, port, username, password, cwd_path):
     # 执行sftp命令
     cmd = 'sftp -o StrictHostKeyChecking=no -P {} {}@{}'.format(port, username, host)
