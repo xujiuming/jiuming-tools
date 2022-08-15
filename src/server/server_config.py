@@ -61,16 +61,15 @@ def server_remove(name):
 
 def server_list():
     sc_list = ServerConfig.select()
+    [print(f.name) for f in sc_list]
     if sc_list is None:
         return
+    click.echo(sc_list)
     config_str = "服务器信息列表:\n"
     for index, sc in enumerate(sc_list):
-        config_str += '第{}台服务器名称:{},登录用户名:{},地址:{},端口:{},认证类型:{}\n'.format(index + 1, sc.name,
-                                                                                               sc.username,
-                                                                                               sc.host, str(sc.port),
-                                                                                               ServerConfig.AuthType(
-                                                                                                   sc.auth_type).name)
-    config_str += "共{}台服务器".format(len(sc_list))
+        config_str += '第{}台服务器名称:{},登录用户名:{},地址:{},端口:{}'.format(index + 1, sc.name, sc.username,
+                                                                                 sc.host, str(sc.port))
+    config_str += "\n共{}台服务器".format(len(sc_list))
     click.echo(config_str)
 
 
