@@ -7,6 +7,7 @@ from prettytable import PrettyTable
 from src.cmd import cmd_manager
 from src.config import global_config, config_manager
 from src.config.global_config import compile_ip, compile_host_mame, tools_dependency_info_arr
+from src.config.peewee_config import ServerConfig
 from src.local import http_server, pc_info, net_manager, pc_test
 from src.script import script_manager
 from src.server import server_config
@@ -88,7 +89,8 @@ def check_tools_dependency(ctx, param, value):
 
 
 @click.group()
-@click.option('--version', '-v', help='工具版本', is_flag=True, callback=print_version, expose_value=False, is_eager=True)
+@click.option('--version', '-v', help='工具版本', is_flag=True, callback=print_version, expose_value=False,
+              is_eager=True)
 @click.option('--check', '-c', help='检测当前环境下工具依赖是否完整', is_flag=True, callback=check_tools_dependency,
               expose_value=False,
               is_eager=True)
@@ -112,19 +114,20 @@ def server_list():
 @click.option('--host', '-h', prompt='请输入服务器地址', callback=validate_ip_or_host_name_type)
 @click.option('--port', '-p', prompt='请输入服务器ssh端口,默认为22', default=22)
 @click.option('--username', '-u', prompt='请输入服务器用户名')
-@click.option('--mode', '-m', prompt='指定模式', type=click.Choice(['PASSWORD', 'SECRET'], case_sensitive=False))
+@click.option('--mode', '-m', prompt='指定模式1-PASSWORD),2-SECRET',
+              type=click.Choice(['1', '2'], case_sensitive=False))
 def server_add(name, host, port, username, mode):
     password = None
     path = None
-
-    if str(mode).upper() == 'PASSWORD':
+    auth_type = int(mode)
+    if auth_type == ServerConfig.AuthType.PWD.value:
         password = click.prompt('请输入密码', type=str)
-    elif str(mode).upper() == 'SECRET':
+    elif auth_type == ServerConfig.AuthType.SECRET.value:
         path = click.prompt('密钥位置', type=click.Path(exists=True))
     else:
         click.echo('无法识别此模式!' + mode)
         return
-    server_config.server_add(str(name).strip(), host, port, username, password, path)
+    server_config.server_add(str(name).strip(), host, port, username, auth_type, password, path)
 
 
 @server.command("remove", help='根据名称删除服务器配置')
@@ -204,7 +207,8 @@ def local_traceroute(dir, port, host):
 
 
 @local.command('socket-test', help='测试服务器是否可以打开socket')
-@click.option('--host', '-h', type=str, prompt='请输入服务器地址', callback=validate_ip_or_host_name_type, help='服务器地址')
+@click.option('--host', '-h', type=str, prompt='请输入服务器地址', callback=validate_ip_or_host_name_type,
+              help='服务器地址')
 @click.option('--port', '-p', type=int, default=80, help='探测端口号(默认为80)')
 def socket_test(host, port):
     net_manager.net_test(host, port)
