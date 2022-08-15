@@ -130,7 +130,7 @@ def server_sftp(name, cwd_path):
         open_sftp_secret_key_tty(sc.host, sc.port, sc.username, sc.secret_key_blob,
                                  cwd_path)
     elif sc.auth_type == ServerConfig.AuthType.PWD.value:
-        open_ssh_password_tty(sc.host, sc.port, sc.username, sc.password)
+        open_sftp_password_tty(sc.host, sc.port, sc.username, sc.password, cwd_path)
     else:
         click.echo("暂不支持{}类型服务器认证方式!".format(sc.auth_type))
 
@@ -256,7 +256,7 @@ def get_server_config_tun_info(sc: ServerConfig, tun_str):
 
 def server_select_connect():
     # 获取服务器列表 增加编号
-    sc_list = ServerConfig.find_all()
+    sc_list = ServerConfig.select()
     if sc_list is None:
         return
     config_str = '服务器信息:\n'
@@ -275,7 +275,7 @@ def server_select_connect():
 
 
 def server_select_sftp(cwd):
-    sc_list = server_store.find_all()
+    sc_list = ServerConfig.select()
     if sc_list is None:
         return
     config_str = '服务器信息:\n'
