@@ -38,20 +38,17 @@ tools_dependency_info_arr = [
     # ToolsDependency('sar', "显示当前操作系统信息", 'yay -Syyu screenfetch'),
     # ToolsDependency('showError', '测试错误情况', 'test'),
 ]
-# 配置目录存放在 用户根目录
-root_config_dir = '{}/.jiuming-tools'.format(os.path.expanduser('~'))
-if not os.path.exists(root_config_dir):
-    os.makedirs(root_config_dir)
-
-# secret 临时存放目录
-secret_tmp_dir = '{}/.jiuming-tools/secret-tmp'.format(os.path.expanduser('~'))
-if not os.path.exists(secret_tmp_dir):
-    os.makedirs(secret_tmp_dir)
 
 # 配置目录存放在 用户根目录
 db_dir = '{}/.jiuming-tools/config/db'.format(os.path.expanduser('~'))
 if not os.path.exists(db_dir):
     os.makedirs(db_dir)
+
+
+# 配置目录存放在 用户根目录
+root_config_dir = '{}/.jiuming-tools'.format(os.path.expanduser('~'))
+if not os.path.exists(root_config_dir):
+    os.makedirs(root_config_dir)
 
 # 功能配置目录
 config_default_file = '{}/.jiuming-tools/config'.format(os.path.expanduser('~'))
@@ -72,3 +69,5 @@ if not os.path.exists(private_key_default_file):
 compile_ip = re.compile('^((25[0-5]|2[0-4]\d|[01]?\d\d?)\.){3}(25[0-5]|2[0-4]\d|[01]?\d\d?)$')
 compile_host_mame = re.compile('^[a-zA-Z0-9][-a-zA-Z0-9]{0,62}(\.[a-zA-Z0-9][-a-zA-Z0-9]{0,62})+\.?$')
 compile_tun_value = re.compile('^[a-zA-Z0-9]{0,62}:[a-zA-Z0-9]{0,62}$')
+
+

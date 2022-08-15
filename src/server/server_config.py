@@ -1,6 +1,6 @@
 # 默认配置路径
-import io
 import os
+import shutil
 import socket
 import time
 
@@ -8,12 +8,13 @@ import click
 import pexpect
 import psutil
 
-from src.config.global_config import compile_ip, compile_host_mame, \
-    compile_tun_value, secret_tmp_dir
-from src.config.peewee_config import ServerConfig
+from src.config.global_config import private_key_default_file, compile_ip, compile_host_mame, \
+    compile_tun_value
+from src.server import server_store
+from src.server.server_store import ServerConfig
 
 
-def server_add(name, host, port, username, auth_type, password, path):
+def server_add(name, host, port, username, password, path):
     """
     添加服务配置
     :param name: 服务器名称
@@ -25,7 +26,7 @@ def server_add(name, host, port, username, auth_type, password, path):
     :return:
     """
     name = name.strip()
-    secret_key_byte_array = None
+    secret_key_path = None
     if path is not None:
         abs_path = path
         # 处理用户目录
@@ -33,65 +34,65 @@ def server_add(name, host, port, username, auth_type, password, path):
             abs_path = str(path).replace('~', os.path.expanduser('~'))
         click.echo(abs_path)
         if os.path.exists(abs_path) and os.path.isfile(abs_path):
-            secret_key_file = open(abs_path, "rb")
-            secret_key_byte_array = io.BytesIO(secret_key_file.read()).getvalue()
+            # 计算密钥地址
+            secret_key_path = private_key_default_file + '/{}_{}.id_rsa'.format(name, username)
+            click.echo(abs_path + '00' + secret_key_path)
+            # 复制密钥到配置目录命名规则 服务器名_用户名_host地址
+            shutil.copyfile(abs_path, secret_key_path)
         else:
-            raise click.FileError('处理密钥异常！未找到密钥或者无权限')
+            raise click.FileError('保存密钥异常！未找到密钥或者无权限')
 
-    sc = ServerConfig(name=name, host=host, port=port, username=username, auth_type=auth_type, password=password,
-                      secret_key_blob=secret_key_byte_array)
-    sc.save()
+    sc = ServerConfig(name=name, host=host, port=port, username=username, password=password,
+                      secret_key_path=secret_key_path)
+    server_store.create(sc)
     echo_str = '\n录入的服务器信息:\n名称:{}\n地址:{}\nssh端口:{}'.format(name, host, port)
+    if secret_key_path is not None:
+        echo_str += '\n密钥地址:{}'.format(secret_key_path)
     click.echo(echo_str)
 
 
 def server_edit():
-    click.echo("暂未实现编辑!请直接删除之后新增")
+    server_store.edit()
 
 
 def server_remove(name):
     """
     删除服务器配置信息
+    获取所有配置  删除其中name符合的数据
     :param name: 服务器名称
     :return:
     """
-    del_count = ServerConfig.delete().where(ServerConfig.name == name).execute()
-    click.echo("删除{}服务器信息,删除条数:{}".format(name, str(del_count)))
+    server_store.remove_by_name(name)
 
 
 def server_list():
-    sc_list = ServerConfig.select()
-    [print(f.name) for f in sc_list]
+    sc_list = server_store.find_all()
     if sc_list is None:
         return
-    click.echo(sc_list)
     config_str = "服务器信息列表:\n"
     for index, sc in enumerate(sc_list):
-        config_str += '第{}台服务器名称:{},登录用户名:{},地址:{},端口:{}'.format(index + 1, sc.name, sc.username,
-                                                                                 sc.host, str(sc.port))
+        config_str += '第{}台服务器名称:{},登录用户名:{},地址:{},端口:{}'.format(index + 1, sc.name, sc.username, sc.host, str(sc.port))
+        if sc.secret_key_path is not None:
+            config_str = config_str + ',密钥地址:{}'.format(sc.secret_key_path)
+        config_str = config_str + '\n'
     config_str += "\n共{}台服务器".format(len(sc_list))
     click.echo(config_str)
 
 
 def server_connect(name):
     click.echo("连接{}服务器...".format(name))
-    sc = ServerConfig.get(ServerConfig.name == name)
+    sc = server_store.find_by_name(name)
     if sc is None:
         click.echo("未找到{}服务器配置!".format(name))
         return
-    if sc.auth_type == ServerConfig.AuthType.SECRET.value:
-        open_ssh_secret_key_tty(sc.host, sc.port, sc.username, sc.secret_key_blob)
-    elif sc.auth_type == ServerConfig.AuthType.PWD.value:
-        open_ssh_password_tty(sc.host, sc.port, sc.username, sc.password)
+    # 如果存在密钥 优先使用密钥登录服务器
+    if sc.secret_key_path is not None:
+        open_ssh_secret_key_tty(sc.host, sc.port, sc.username, sc.secret_key_path)
     else:
-        click.echo("暂不支持{}类型服务器认证方式!".format(sc.auth_type))
+        open_ssh_password_tty(sc.host, sc.port, sc.username, sc.password)
 
 
-def open_ssh_secret_key_tty(host, port, username, secret_key_blob):
-    secret_key_path = secret_tmp_dir + "/{}-{}-{}.pub".format(host, str(port), username)
-    if not os.path.exists(secret_key_path):
-        secret_key_file = open(secret_key_path, "a+")
-        secret_key_file.write(secret_key_blob)
+def open_ssh_secret_key_tty(host, port, username, secret_key_path):
     cmd = 'ssh -o StrictHostKeyChecking=no -i {}  -p {} {}@{}'.format(secret_key_path, port, username, host)
     # 授权600
     os.chmod(secret_key_path, 0o600)
@@ -121,17 +122,15 @@ def open_ssh_password_tty(host, port, username, password):
 
 def server_sftp(name, cwd_path):
     click.echo("连接{}服务器sftp服务...".format(name))
-    sc = ServerConfig.get(ServerConfig.name == name)
+    sc = server_store.find_by_name(name)
     if sc is None:
         click.echo("未找到{}服务器配置!".format(name))
         return
-    if sc.auth_type == ServerConfig.AuthType.SECRET.value:
-        open_sftp_secret_key_tty(sc.host, sc.port, sc.username, sc.secret_key_blob,
+    if sc.secret_key_path is not None:
+        open_sftp_secret_key_tty(sc.host, sc.port, sc.username, sc.secret_key_path,
                                  cwd_path)
-    elif sc.auth_type == ServerConfig.AuthType.PWD.value:
-        open_ssh_password_tty(sc.host, sc.port, sc.username, sc.password)
     else:
-        click.echo("暂不支持{}类型服务器认证方式!".format(sc.auth_type))
+        open_sftp_password_tty(sc.host, sc.port, sc.username, sc.password, cwd_path)
 
 
 def open_sftp_password_tty(host, port, username, password, cwd_path):
@@ -151,12 +150,8 @@ def open_sftp_password_tty(host, port, username, password, cwd_path):
     p_sftp.interact()
 
 
-def open_sftp_secret_key_tty(host, port, username, secret_key_blob, cwd_path):
-    secret_key_path = secret_tmp_dir + "/{}-{}-{}.pub".format(host, str(port), username)
-    if not os.path.exists(secret_key_path):
-        secret_key_file = open(secret_key_path, "a+")
-        secret_key_file.write(secret_key_blob)
-        # 执行sftp命令
+def open_sftp_secret_key_tty(host, port, username, secret_key_path, cwd_path):
+    # 执行sftp命令
     cmd = 'sftp -o StrictHostKeyChecking=no -i {} -P {} {}@{}'.format(secret_key_path, port, username, host)
     p_sftp = pexpect.spawn(command=cmd, cwd=cwd_path)
     # 设置终端大小
@@ -170,7 +165,7 @@ def ping_ssh_server(name):
     """
      检查 列表中的 server是否存活
     """
-    sc = ServerConfig.get(ServerConfig.name == name)
+    sc = server_store.find_by_name(name)
     if sc is None:
         click.echo("未找到{}服务器配置!".format(name))
         return
@@ -179,7 +174,7 @@ def ping_ssh_server(name):
     r = open_socket_ssh_server(sc.host, sc.port)
     end_time = time.perf_counter_ns()
     result = "{},探测结果:{},耗时:{}ms".format(sc.host + ":" + str(sc.port), r,
-                                               str(round((int(round((end_time - start_time) / 1000000))), 2)))
+                                         str(round((int(round((end_time - start_time) / 1000000))), 2)))
     click.echo(result)
 
 
@@ -200,7 +195,7 @@ def open_socket_ssh_server(host, port):
 
 
 def server_tun(left, right, reverse, name):
-    sc = ServerConfig.get(ServerConfig.name == name)
+    sc = server_store.find_by_name(name)
     if sc is None:
         click.echo("未找到{}服务器配置!".format(name))
         return
@@ -255,7 +250,7 @@ def get_server_config_tun_info(sc: ServerConfig, tun_str):
 
 def server_select_connect():
     # 获取服务器列表 增加编号
-    sc_list = ServerConfig.find_all()
+    sc_list = server_store.find_all()
     if sc_list is None:
         return
     config_str = '服务器信息:\n'
