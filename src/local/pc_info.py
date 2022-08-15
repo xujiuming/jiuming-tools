@@ -279,7 +279,8 @@ def net_info(details):
     net_io_counters = psutil.net_io_counters(pernic=True)
 
     net_io_table = PrettyTable(
-        ['发送数据大小', '接受数据大小', '发送的数据包数量', '接受的数据包数量', '接受的错误总数', '发送的错误总数',
+        ['网络接口名称', '发送数据大小', '接受数据大小', '发送的数据包数量', '接受的数据包数量', '接受的错误总数',
+         '发送的错误总数',
          '丢弃的传入数据包总数',
          '丢弃的传出数据包总数'])
     for key in net_io_counters.keys():
