@@ -6,7 +6,7 @@ import subprocess
 
 import click
 import psutil
-from prettytable import PrettyTable, MARKDOWN
+from prettytable import PrettyTable
 
 from src.utils.convertUtils import byte_length_format
 
@@ -31,7 +31,8 @@ def echo_pc_info():
     """
     os_info = os.uname()
     # 获取当前系统虚拟化方式
-    virtual_type_split_arr = str.split(subprocess.getoutput("lscpu | grep -E  '超管理器厂商|Hypervisor vendor'").strip(''))
+    virtual_type_split_arr = str.split(
+        subprocess.getoutput("lscpu | grep -E  '超管理器厂商|Hypervisor vendor'").strip(''))
     virtual_type_str = '无'
     if len(virtual_type_split_arr) == 2:
         virtual_type_str = virtual_type_split_arr[1]
@@ -141,7 +142,7 @@ def pid_info(pid, details):
 
     mem_full_info = p.memory_full_info()
     mem_full_info_str = "使用总内存大小{},swap大小{}".format(byte_length_format(mem_full_info[8]),
-                                                    byte_length_format(mem_full_info[9]))
+                                                             byte_length_format(mem_full_info[9]))
 
     base_str = """
 PID:{}
@@ -253,6 +254,51 @@ def mem_info(top, pid, details):
 
 
 def net_info(details):
+    all_net_io_counter = psutil.net_io_counters()
+    all_net_io_info_str = """
+综合数据:     
+发送数据大小: {}
+接受数据大小: {}
+发送的数据包数量: {}
+接受的数据包数量: {}
+接受的错误总数: {}
+发送的错误总数: {}
+丢弃的传入数据包总数: {}
+丢弃的传出数据包总数: {}
+    """.format(byte_length_format(all_net_io_counter.bytes_sent),
+               byte_length_format(all_net_io_counter.bytes_recv),
+               all_net_io_counter.packets_sent,
+               all_net_io_counter.packets_recv,
+               all_net_io_counter.errin,
+               all_net_io_counter.errout,
+               all_net_io_counter.dropin,
+               all_net_io_counter.dropout
+               )
+    print(all_net_io_info_str)
+
+    net_io_counters = psutil.net_io_counters(pernic=True)
+
+    net_io_table = PrettyTable(
+        ['发送数据大小', '接受数据大小', '发送的数据包数量', '接受的数据包数量', '接受的错误总数', '发送的错误总数',
+         '丢弃的传入数据包总数',
+         '丢弃的传出数据包总数'])
+    for key in net_io_counters.keys():
+        t = net_io_counters[key]
+        net_io_table.add_row([key,
+                              byte_length_format(t.bytes_sent),
+                              byte_length_format(t.bytes_recv),
+                              t.packets_sent,
+                              t.packets_recv,
+                              t.errin,
+                              t.errout,
+                              t.dropin,
+                              t.dropout
+                              ])
+
+    net_io_table.align = "l"
+    # 设置表格最长列
+    net_io_table.max_width = 80
+    click.echo(net_io_table)
     pass
 
 
@@ -278,7 +324,8 @@ def disk_info():
     try:
         disk_stat_dict = psutil.disk_io_counters(perdisk=True)
         d_s_table = PrettyTable(
-            ['设备名', '读取次数', '写入次数', '读取大小', '写入大小', '读取耗时(ms)', '写入耗时(ms)', '实际io耗费时间(ms)', '合并读取次数', '合并写入次数'])
+            ['设备名', '读取次数', '写入次数', '读取大小', '写入大小', '读取耗时(ms)', '写入耗时(ms)',
+             '实际io耗费时间(ms)', '合并读取次数', '合并写入次数'])
         for key in disk_stat_dict.keys():
             t = disk_stat_dict[key]
             d_s_table.add_row([key,
