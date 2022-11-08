@@ -88,7 +88,8 @@ def check_tools_dependency(ctx, param, value):
 
 
 @click.group()
-@click.option('--version', '-v', help='工具版本', is_flag=True, callback=print_version, expose_value=False, is_eager=True)
+@click.option('--version', '-v', help='工具版本', is_flag=True, callback=print_version, expose_value=False,
+              is_eager=True)
 @click.option('--check', '-c', help='检测当前环境下工具依赖是否完整', is_flag=True, callback=check_tools_dependency,
               expose_value=False,
               is_eager=True)
@@ -204,7 +205,8 @@ def local_traceroute(dir, port, host):
 
 
 @local.command('socket-test', help='测试服务器是否可以打开socket')
-@click.option('--host', '-h', type=str, prompt='请输入服务器地址', callback=validate_ip_or_host_name_type, help='服务器地址')
+@click.option('--host', '-h', type=str, prompt='请输入服务器地址', callback=validate_ip_or_host_name_type,
+              help='服务器地址')
 @click.option('--port', '-p', type=int, default=80, help='探测端口号(默认为80)')
 def socket_test(host, port):
     net_manager.net_test(host, port)
@@ -246,6 +248,11 @@ def net_info(details):
 @local.command('disk-info', help='获取磁盘新消息')
 def disk_info():
     pc_info.disk_info()
+
+
+@local.command('detect', help='探测当前机器的各项性能')
+def detect():
+    pc_info.detect()
 
 
 # ----------------------------------- tools config manager  -----------------------------------------------------------
