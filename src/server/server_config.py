@@ -4,10 +4,10 @@ import shutil
 import socket
 import time
 
-import PrettyTable as PrettyTable
 import click
 import pexpect
 import psutil
+from prettytable import PrettyTable
 
 from src.config.global_config import private_key_default_file, compile_ip, compile_host_mame, \
     compile_tun_value
@@ -73,7 +73,7 @@ def server_list():
     t_table = PrettyTable(['序号', '名称', '用户名', '地址', '端口', '秘钥地址'])
     for index, sc in enumerate(sc_list):
         t_table.add_row([index + 1, sc.name, sc.username, sc.host, str(sc.port),
-                         (sc.secret_key_path if sc.secret_key_path is not None else '')])
+                         (sc.secret_key_path if sc.secret_key_path is not None else '无秘钥')])
     # 设置对齐方式
     t_table.align = "l"
     # 设置表格最长列
@@ -253,15 +253,13 @@ def get_server_config_tun_info(sc: ServerConfig, tun_str):
 
 def server_select_connect():
     # 获取服务器列表 增加编号
+    server_list()
     sc_list = server_store.find_all()
     if sc_list is None:
         return
-    config_str = '服务器信息:\n'
     index_name_map = {}
     for index, sc in enumerate(sc_list):
         index_name_map[str(index + 1)] = sc.name
-        config_str += '{})台服务器名称:{},地址:{},端口:{}\n'.format(index + 1, sc.name, sc.host, str(sc.port))
-    click.echo(config_str)
     # 等待用户输入服务器编号
     r = click.prompt(
         "选择服务器编号:",
@@ -272,15 +270,13 @@ def server_select_connect():
 
 
 def server_select_sftp(cwd):
+    server_list()
     sc_list = server_store.find_all()
     if sc_list is None:
         return
-    config_str = '服务器信息:\n'
     index_name_map = {}
     for index, sc in enumerate(sc_list):
         index_name_map[str(index + 1)] = sc.name
-        config_str += '{})台服务器名称:{},地址:{},端口:{}\n'.format(index + 1, sc.name, sc.host, str(sc.port))
-    click.echo(config_str)
     # 等待用户输入服务器编号
     r = click.prompt(
         "选择服务器编号:",
