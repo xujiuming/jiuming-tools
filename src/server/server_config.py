@@ -73,7 +73,7 @@ def server_list():
     t_table = PrettyTable(['序号', '名称', '用户名', '地址', '端口', '秘钥地址'])
     for index, sc in enumerate(sc_list):
         t_table.add_row([index + 1, sc.name, sc.username, sc.host, str(sc.port),
-                         (sc.secret_key_path if sc.secret_key_path is not None else '无秘钥')])
+                         (sc.secret_key_path if sc.secret_key_path is not None else '')])
     # 设置对齐方式
     t_table.align = "l"
     # 设置表格最长列
