@@ -15,13 +15,13 @@ jobs:
       # 检出代码
       - uses: actions/checkout@v1
       # 缓存pip安装依赖
-#      - name: cachePipInstall
-#        uses: actions/cache@v2
-#        env:
-#          cache-name: cache-pip-lib
-#        with:
-#          path: /opt/hostedtoolcache/Python/3.9.1/x64/lib/python3.9/site-packages
-#          key: ${{ runner.os }}-build-${{ env.cache-name }}-20201230114600
+      #      - name: cachePipInstall
+      #        uses: actions/cache@v2
+      #        env:
+      #          cache-name: cache-pip-lib
+      #        with:
+      #          path: /opt/hostedtoolcache/Python/3.9.1/x64/lib/python3.9/site-packages
+      #          key: ${{ runner.os }}-build-${{ env.cache-name }}-20201230114600
       #缓存pipenv依赖
       - name: cachePipenv
         id: cachePipenvId
@@ -29,7 +29,7 @@ jobs:
         env:
           cache-name: cache-pipenv-lib
         with:
-          path:  /home/runner/.local/share/virtualenvs/jiuming-tools-*
+          path: /home/runner/.local/share/virtualenvs/jiuming-tools-*
           key: ${{ runner.os }}-build-${{ env.cache-name }}-${{ hashFiles('**/Pipfile.lock','**/Pipfile') }}
 
       - uses: actions/setup-python@v2
@@ -58,4 +58,20 @@ jobs:
           TWINE_PASSWORD: ${{ secrets.PYPI_PASSWORD }}
         #推送
         run: |
-         pipenv run   twine upload dist/*
+          pipenv run   twine upload dist/*
+      - name: 成功通知
+        if: success()
+        run: |
+          curl 'https://oapi.dingtalk.com/robot/send?access_token=${{ secrets.DINGTALK_ACCESS_TOKEN }}' -H 'Content-Type: application/json' -d '{"msgtype": "text",
+                                      "text": {
+                                           "content": "jiuming-tools发布到pypi成功!"
+                                      }
+                                            }'
+      - name: 失败通知
+        if: failure()
+        run: |
+          curl 'https://oapi.dingtalk.com/robot/send?access_token=${{ secrets.DINGTALK_ACCESS_TOKEN }}' -H 'Content-Type: application/json' -d '{"msgtype": "text",
+                                      "text": {
+                                           "content": "jiuming-tools发布到pypi失败!请登录github查看"
+                                      }
+                                            }'
