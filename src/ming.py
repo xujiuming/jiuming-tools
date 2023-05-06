@@ -41,7 +41,7 @@ def print_version(ctx, param, value):
     用来管理支持ssh的服务器和一些本地环境的信息查看功能     
     作者:ming 
     仅适用linux 其他平台兼容性不做保证
-    启用自动补全:
+    手动启用自动补全:
     bash:在.bashrc末尾添加 eval "$(_M_COMPLETE=source m)"
     zsh:在.zshrc末尾添加 eval "$(_M_COMPLETE=source_zsh m)"
     依赖的工具：{}
