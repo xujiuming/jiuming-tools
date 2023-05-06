@@ -4,6 +4,7 @@ import shutil
 import socket
 import time
 
+import PrettyTable as PrettyTable
 import click
 import pexpect
 import psutil
@@ -69,14 +70,16 @@ def server_list():
     sc_list = server_store.find_all()
     if sc_list is None:
         return
-    config_str = "服务器信息列表:\n"
+    t_table = PrettyTable(['序号', '名称', '用户名', '地址', '端口', '秘钥地址'])
     for index, sc in enumerate(sc_list):
-        config_str += '第{}台服务器名称:{},登录用户名:{},地址:{},端口:{}'.format(index + 1, sc.name, sc.username, sc.host, str(sc.port))
-        if sc.secret_key_path is not None:
-            config_str = config_str + ',密钥地址:{}'.format(sc.secret_key_path)
-        config_str = config_str + '\n'
-    config_str += "\n共{}台服务器".format(len(sc_list))
-    click.echo(config_str)
+        t_table.add_row([index + 1, sc.name, sc.username, sc.host, str(sc.port),
+                         (sc.secret_key_path if sc.secret_key_path is not None else '')])
+    # 设置对齐方式
+    t_table.align = "l"
+    # 设置表格最长列
+    t_table.max_width = 80
+    click.echo(t_table)
+    click.echo("共{}台服务器".format(len(sc_list)))
 
 
 def server_connect(name):
@@ -174,7 +177,7 @@ def ping_ssh_server(name):
     r = open_socket_ssh_server(sc.host, sc.port)
     end_time = time.perf_counter_ns()
     result = "{},探测结果:{},耗时:{}ms".format(sc.host + ":" + str(sc.port), r,
-                                         str(round((int(round((end_time - start_time) / 1000000))), 2)))
+                                               str(round((int(round((end_time - start_time) / 1000000))), 2)))
     click.echo(result)
 
 
